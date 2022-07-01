@@ -41,7 +41,7 @@ class Game:
 
                 sq = self.world.world[x][y]['cart_rect']
                 rect = pg.Rect(sq[0][0], sq[0][1], TILE_SIZE, TILE_SIZE)
-                pg.draw.rect(self.screen, (0, 0, 255), rect, 1)
+                #pg.draw.rect(self.screen, (0, 0, 255), rect, 1)
 
                 p = self.world.world[x][y]['iso_poly']
                 p = [(x+self.width/2, y+self.height/4) for x,y in p]

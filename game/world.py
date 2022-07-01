@@ -32,7 +32,7 @@ class World():
 
         iso_poly = [self.cart_to_iso(x, y) for x,y in rect]
 
-        minx = 
+        #minx = 
 
         out = {
             'grid': [grid_x, grid_y],
