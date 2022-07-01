@@ -10,6 +10,7 @@ class World():
         self.height = height
 
         self.world = self.create_world() 
+        self.tiles = self.load_images()
 
     def create_world(self):
         world = []
