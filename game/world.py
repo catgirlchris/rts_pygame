@@ -48,3 +48,10 @@ class World():
         iso_x = x-y
         iso_y = (x+y)/2
         return iso_x, iso_y
+
+    def load_images(self):
+        block = pg.image.load('assets/graphics/block.png')
+        tree = pg.image.load('assets/graphics/block.png')
+        rock = pg.image.load('assets/graphics/rock.png')
+
+        return {"block": block, 'tree':tree, 'rock':rock}
