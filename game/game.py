@@ -1,6 +1,7 @@
 import pygame as pg
 from .world import World
 from .settings import TILE_SIZE
+from .utils import draw_text
 import sys
 
 class Game:
