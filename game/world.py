@@ -1,6 +1,8 @@
 import pygame as pg
 from .settings import TILE_SIZE
 
+import random
+
 class World():
 
     def __init__(self, grid_length_x, grid_length_y, width, height):
@@ -9,8 +11,10 @@ class World():
         self.width = width
         self.height = height
 
-        self.world = self.create_world() 
+        self.grass_tiles = pg.Surface((width, height))
         self.tiles = self.load_images()
+        self.world = self.create_world() 
+        
 
     def create_world(self):
         world = []
@@ -20,6 +24,9 @@ class World():
             for grid_y in range(self.grid_length_y):
                 world_tile = self.grid_to_world(grid_x, grid_y)
                 world[grid_x].append(world_tile)
+
+                render_pos = world_tile['render_pos']
+                self.grass_tiles.blit(self.tiles['block'], (render_pos[0] + self.width/2, render_pos[1] + self.height/4))
         
         return world
     
@@ -36,11 +43,20 @@ class World():
         minx = min([x for x, y in iso_poly])
         miny = min([y for x, y in iso_poly])
 
+        r = random.randint(1, 100)
+        if r <= 5:
+            tile = 'tree'
+        elif r <= 10:
+            tile = 'rock'
+        else:
+            tile = ''
+
         out = {
             'grid': [grid_x, grid_y],
             'cart_rect': rect,
             'iso_poly': iso_poly,
-            'render_pos': [minx, miny]
+            'render_pos': [minx, miny],
+            'tile': tile,
         }
 
         return out
@@ -52,7 +68,7 @@ class World():
 
     def load_images(self):
         block = pg.image.load('assets/graphics/block.png')
-        tree = pg.image.load('assets/graphics/block.png')
+        tree = pg.image.load('assets/graphics/tree.png')
         rock = pg.image.load('assets/graphics/rock.png')
 
-        return {"block": block, 'tree':tree, 'rock':rock}
+        return {'block': block, 'tree':tree, 'rock':rock}
