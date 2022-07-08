@@ -58,4 +58,12 @@ class Game:
                 #p = [(x+self.width/2, y+self.height/4) for x,y in p]
                 #pg.draw.polygon(self.screen, (255, 0, 0), p, 1)
 
+        draw_text(
+            self.screen,
+            'fps={}'.format(round(self.clock.get_fps() )),
+            25,
+            (255, 255, 255),
+            (10, 10)
+        )
+
         pg.display.flip()
