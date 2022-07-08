@@ -12,7 +12,9 @@ class Game:
         self.clock = clock
         self.width, self.height = self.screen.get_size()
 
-        self.world = World(10, 10, self.width, self.height)
+        # world
+        self.world = World(50, 50, self.width, self.height)
+
         # camera
         self.camera = Camera(self.width, self.height)
 
