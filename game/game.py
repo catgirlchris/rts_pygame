@@ -40,7 +40,7 @@ class Game:
     def draw(self):
         self.screen.fill((0, 0, 0))
 
-        self.screen.blit(self.world.grass_tiles, (0, 0))
+        self.screen.blit(self.world.grass_tiles, (self.camera.scroll.x, self.camera.scroll.y))
 
         for x in range(self.world.grid_length_x):
             for y in range(self.world.grid_length_y):
@@ -54,8 +54,9 @@ class Game:
 
                 tile = self.world.world[x][y]['tile']
                 if tile != '':
-                    self.screen.blit(self.world.tiles[tile], (render_pos[0]+self.width/2,
-                        render_pos[1]+self.height/4 - (self.world.tiles[tile].get_height() - TILE_SIZE)))
+                    self.screen.blit(self.world.tiles[tile], 
+                        (render_pos[0] + self.world.grass_tiles.get_width()/2 + self.camera.scroll.x,
+                        render_pos[1] - (self.world.tiles[tile].get_height() - TILE_SIZE) + self.camera.scroll.y))
 
                 #p = self.world.world[x][y]['iso_poly']
                 #p = [(x+self.width/2, y+self.height/4) for x,y in p]
