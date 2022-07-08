@@ -1,4 +1,6 @@
 import pygame as pg
+import random
+import noise
 from .settings import TILE_SIZE
 
 import random
@@ -10,6 +12,8 @@ class World():
         self.grid_length_y = grid_length_y
         self.width = width
         self.height = height
+
+        self.perlin_scale = grid_length_x/2
 
         # the polygons have double the witdh than height
         self.grass_tiles = pg.Surface((grid_length_x * TILE_SIZE * 2, grid_length_y * TILE_SIZE + TILE_SIZE*2)).convert_alpha()
@@ -49,12 +53,17 @@ class World():
         miny = min([y for x, y in iso_poly])
 
         r = random.randint(1, 100)
-        if r <= 5:
+        perlin = 100 * noise.pnoise2(grid_x/self.perlin_scale, grid_y/self.perlin_scale)
+
+        if (perlin >= 15) or (perlin <= -35):
             tile = 'tree'
-        elif r <= 10:
-            tile = 'rock'
         else:
-            tile = ''
+            if r == 1:
+                tile = 'tree'
+            elif r == 2:
+                tile = 'rock'
+            else:
+                tile = ''
 
         out = {
             'grid': [grid_x, grid_y],
