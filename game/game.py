@@ -2,6 +2,7 @@ import pygame as pg
 from .world import World
 from .settings import TILE_SIZE
 from .utils import draw_text
+from .camera import Camera
 import sys
 
 class Game:
@@ -33,6 +34,7 @@ class Game:
     
     def update(self):
         pass
+        self.camera.update()
 
     def draw(self):
         self.screen.fill((0, 0, 0))
