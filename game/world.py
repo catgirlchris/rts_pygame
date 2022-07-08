@@ -72,8 +72,8 @@ class World():
         return iso_x, iso_y
 
     def load_images(self):
-        block = pg.image.load('assets/graphics/block.png')
-        tree = pg.image.load('assets/graphics/tree.png')
-        rock = pg.image.load('assets/graphics/rock.png')
+        block = pg.image.load('assets/graphics/block.png').convert_alpha()
+        tree = pg.image.load('assets/graphics/tree.png').convert_alpha()
+        rock = pg.image.load('assets/graphics/rock.png').convert_alpha()
 
         return {'block': block, 'tree':tree, 'rock':rock}
