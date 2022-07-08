@@ -35,7 +35,6 @@ class Game:
                     sys.exit()
     
     def update(self):
-        pass
         self.camera.update()
 
     def draw(self):
