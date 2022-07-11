@@ -3,6 +3,7 @@ from .world import World
 from .settings import TILE_SIZE
 from .utils import draw_text
 from .camera import Camera
+from .hud import Hud
 import sys
 
 class Game:
@@ -17,6 +18,9 @@ class Game:
 
         # camera
         self.camera = Camera(self.width, self.height)
+
+        # hud
+        self.hud = Hud(self.width, self.height)
 
     def run(self):
         self.playing = True
@@ -63,6 +67,9 @@ class Game:
                 #p = self.world.world[x][y]['iso_poly']
                 #p = [(x+self.width/2, y+self.height/4) for x,y in p]
                 #pg.draw.polygon(self.screen, (255, 0, 0), p, 1)
+
+        # hud
+        self.hud.draw(self.screen)
 
         draw_text(
             self.screen,
