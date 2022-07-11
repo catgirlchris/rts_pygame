@@ -19,11 +19,55 @@ class Hud:
         self.select_surface = pg.Surface((width*0.3, height*0.2), pg.SRCALPHA)
         self.select_surface.fill(self.hud_color)
 
+        self.images = self.load_images()
+        self.tiles = self.create_build_hud()
+
+
+    def create_build_hud(self):
+        render_pos = [self.width*0.84 + 10, self.height*0.74 + 10]
+        object_width = self.building_surface.get_width() // 5
+
+        tiles = []
+
+        for image_name, image in self.images.items():
+            pos = render_pos.copy()
+            image_tmp = image.copy()
+            image_scale = self.scale_image(image_tmp, w=object_width)
+            rect = image_scale.get_rect(topleft=pos)
+
+            tiles.append(
+                {
+                    "name":image_name,
+                    "icon":image_scale,
+                    "image":self.images[image_name],
+                    "rect":rect,
+                }
+            )
+
+            render_pos[0] += image_scale.get_width() + 10
+
+        return tiles
+
+
     def draw(self, screen:pg.Surface):
         screen.blit(self.resources_surface, (0,0))
         screen.blit(self.building_surface, (self.width*0.84, self.height*0.74))
         screen.blit(self.select_surface, (self.width*0.35, self.height*0.79))
 
+        for tile in self.tiles:
+            screen.blit(tile["icon"], tile["rect"].topleft)
+
+
+    def load_images(self):
+        tree = pg.image.load('assets/graphics/tree.png').convert_alpha()
+        rock = pg.image.load('assets/graphics/rock.png').convert_alpha()
+
+        images = {
+            "tree":tree,
+            "rock":rock,
+        }
+
+        return images
 
     def scale_image(self, image:pg.image, w:int=None, h:int=None):
         if (w == None) and (h == None):
