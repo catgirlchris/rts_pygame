@@ -24,3 +24,21 @@ class Hud:
         screen.blit(self.building_surface, (self.width*0.84, self.height*0.74))
         screen.blit(self.select_surface, (self.width*0.35, self.height*0.79))
 
+
+    def scale_image(self, image:pg.image, w:int=None, h:int=None):
+        if (w == None) and (h == None):
+            pass
+
+        elif h == None:
+            scale = w / image.get_width()
+            h = scale * image.get_height()
+            image = pg.transform.scale(image, (int(w), int(h)))
+
+        elif w == None:
+            scale = scale * image.get_height()
+            w = w / image.get_width()
+            image = pg.transform.scale(image, (int(w), int(h)))
+        else:
+            image = pg.transform.scale(image, (int(w), int(h)))
+
+        return image
