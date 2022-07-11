@@ -19,7 +19,7 @@ class Hud:
         self.select_surface = pg.Surface((width*0.3, height*0.2), pg.SRCALPHA)
         self.select_surface.fill(self.hud_color)
 
-    def draw(self, screen):
+    def draw(self, screen:pg.Surface):
         screen.blit(self.resources_surface, (0,0))
         screen.blit(self.building_surface, (self.width*0.84, self.height*0.74))
         screen.blit(self.select_surface, (self.width*0.35, self.height*0.79))
