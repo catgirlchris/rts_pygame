@@ -22,6 +22,7 @@ class Hud:
         self.images = self.load_images()
         self.tiles = self.create_build_hud()
 
+        self.selected_tile = None
 
     def create_build_hud(self):
         render_pos = [self.width*0.84 + 10, self.height*0.74 + 10]
@@ -47,6 +48,19 @@ class Hud:
             render_pos[0] += image_scale.get_width() + 10
 
         return tiles
+
+
+    def update(self):
+        mouse_pos = pg.mouse.get_pos()
+        mouse_action = pg.mouse.get_pressed()
+
+        if mouse_action[2]:
+            self.selected_tile = None
+
+        for tile in self.tiles:
+            if tile["rect"].collidepoint(mouse_pos):
+                if mouse_action[0]:
+                    self.selected_tile = tile
 
 
     def draw(self, screen:pg.Surface):
