@@ -7,7 +7,7 @@ import random
 
 class World():
 
-    def __init__(self, hud, grid_length_x, grid_length_y, width, height):
+    def __init__(self, grid_length_x, grid_length_y, width, height, hud):
         self.hud = hud
         self.grid_length_x = grid_length_x
         self.grid_length_y = grid_length_y
