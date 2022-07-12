@@ -27,10 +27,11 @@ class World():
         self.temp_tile = None
     
     def update(self, camera):
-        
-        self.temp_tile = None
-        mouse_pos = pg.mouse.get_pos()
 
+        mouse_pos = pg.mouse.get_pos()
+        mouse_action = pg.mouse.get_pressed()
+
+        self.temp_tile = None
         if self.hud.selected_tile is not None:
             grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
 
@@ -49,6 +50,11 @@ class World():
                     "iso_poly": iso_poly,
                     "collision": collision,
                 }
+
+                if mouse_action[0] and not collision:
+                    self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
+                    self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
+                    self.hud.selected_tile = None
 
 
     def draw(self, screen:pg.Surface, camera:Camera):
