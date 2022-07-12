@@ -10,14 +10,17 @@ class Hud:
 
         # resources hud
         self.resources_surface = pg.Surface((width, height*0.03), pg.SRCALPHA)
+        self.resources_rect = self.resources_surface.get_rect(topleft=(0,0))
         self.resources_surface.fill(self.hud_color)
 
         # build hud
         self.build_surface = pg.Surface((width*0.15, height*0.25), pg.SRCALPHA)
+        self.build_rect = self.build_surface.get_rect(topleft=(self.width*0.84, self.height*0.74))
         self.build_surface.fill(self.hud_color)
 
         # select hud
         self.select_surface = pg.Surface((width*0.3, height*0.2), pg.SRCALPHA)
+        self.select_rect = self.select_surface.get_rect(topleft=(self.width*0.35, self.height*0.79))
         self.select_surface.fill(self.hud_color)
 
         self.images = self.load_images()
