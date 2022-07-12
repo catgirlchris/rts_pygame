@@ -26,7 +26,7 @@ class World():
 
     def draw(self, screen, camera):
         # batch draw all grass blocks
-        self.screen.blit(self.grass_tiles, (camera.scroll.x, camera.scroll.y))
+        screen.blit(self.grass_tiles, (camera.scroll.x, camera.scroll.y))
 
         # draw other things
         for x in range(self.grid_length_x):
@@ -35,7 +35,7 @@ class World():
 
                 tile = self.world[x][y]['tile']
                 if tile != '':
-                    self.screen.blit(self.tiles[tile], 
+                    screen.blit(self.tiles[tile], 
                         (render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
                         render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y))
 
