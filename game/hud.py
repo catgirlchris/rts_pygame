@@ -1,4 +1,5 @@
 import pygame as pg
+from .utils import draw_text
 
 class Hud:
     def __init__(self, width, height):
@@ -8,7 +9,7 @@ class Hud:
         self.hud_color = (198, 155, 93, 175)
 
         # resources hud
-        self.resources_surface = pg.Surface((width, height*0.02), pg.SRCALPHA)
+        self.resources_surface = pg.Surface((width, height*0.03), pg.SRCALPHA)
         self.resources_surface.fill(self.hud_color)
 
         # building hud
@@ -64,12 +65,26 @@ class Hud:
 
 
     def draw(self, screen:pg.Surface):
+
+        if self.selected_tile is not None:
+            img = self.selected_tile["image"].copy()
+            img.set_alpha(100)
+            screen.blit(img, pg.mouse.get_pos())
+
+        # resources
         screen.blit(self.resources_surface, (0,0))
+        # building
         screen.blit(self.building_surface, (self.width*0.84, self.height*0.74))
+        # select
         screen.blit(self.select_surface, (self.width*0.35, self.height*0.79))
 
         for tile in self.tiles:
             screen.blit(tile["icon"], tile["rect"].topleft)
+
+        pos = self.width - 400
+        for resource in ["wood:", "stone:", "gold:"]:
+            draw_text(screen, resource, 30, (255, 255, 255), (pos, 0))
+            pos += 100
 
 
     def load_images(self):
