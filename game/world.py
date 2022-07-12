@@ -1,13 +1,16 @@
 import pygame as pg
 import random
 import noise
+
+from game.camera import Camera
 from .settings import TILE_SIZE
+from .hud import Hud
 
 import random
 
 class World():
 
-    def __init__(self, grid_length_x, grid_length_y, width, height, hud):
+    def __init__(self, grid_length_x, grid_length_y, width, height, hud:Hud):
         self.hud = hud
         self.grid_length_x = grid_length_x
         self.grid_length_y = grid_length_y
@@ -20,11 +23,29 @@ class World():
         self.grass_tiles = pg.Surface((grid_length_x * TILE_SIZE * 2, grid_length_y * TILE_SIZE + TILE_SIZE*2)).convert_alpha()
         self.tiles = self.load_images()
         self.world = self.create_world() 
-    
-    def update(self):
-        pass
 
-    def draw(self, screen, camera):
+        self.temp_tile = None
+    
+    def update(self, camera):
+
+        mouse_pos = pg.mouse.get_pos()
+        if self.hud.selected_tile is not None:
+            grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
+
+            img = self.hud.selected_tile["image"].copy()
+            img.set_alpha(100)
+
+            render_pos = self.world[grid_pos[0]][grid_pos[1]]["render_pos"]
+
+            self.temp_tile = {
+                "image": img,
+                "render_pos": render_pos,
+            }
+        else:
+            self.temp_tile = None
+
+
+    def draw(self, screen:pg.Surface, camera:Camera):
         # batch draw all grass blocks
         screen.blit(self.grass_tiles, (camera.scroll.x, camera.scroll.y))
 
@@ -38,6 +59,16 @@ class World():
                     screen.blit(self.tiles[tile], 
                         (render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
                         render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y))
+
+        if self.temp_tile is not None:
+            render_pos = self.temp_tile["render_pos"]
+            screen.blit(
+                self.temp_tile["image"],
+                (
+                    render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
+                    render_pos[1] - (self.temp_tile["image"].get_height() - TILE_SIZE) + camera.scroll.y
+                )
+            )
 
     def create_world(self):
         world = []
@@ -97,6 +128,22 @@ class World():
         iso_x = x-y
         iso_y = (x+y)/2
         return iso_x, iso_y
+
+    def mouse_to_grid(self, x, y, scroll):
+        # transform from world position from the mouse position
+        #  (removing camera scroll and offset)
+        world_x = x - scroll.x - self.grass_tiles.get_width()/2
+        world_y = y - scroll.y
+
+        # transfrom to cart
+        cart_y = (2*world_y - world_x)/2
+        cart_x = cart_y + world_x
+
+        # transfrom to grid coordinate
+        grid_x = int(cart_x // TILE_SIZE)
+        grid_y = int(cart_y // TILE_SIZE)
+
+        return grid_x, grid_y
 
     def load_images(self):
         block = pg.image.load('assets/graphics/block.png').convert_alpha()

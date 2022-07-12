@@ -12,9 +12,9 @@ class Hud:
         self.resources_surface = pg.Surface((width, height*0.03), pg.SRCALPHA)
         self.resources_surface.fill(self.hud_color)
 
-        # building hud
-        self.building_surface = pg.Surface((width*0.15, height*0.25), pg.SRCALPHA)
-        self.building_surface.fill(self.hud_color)
+        # build hud
+        self.build_surface = pg.Surface((width*0.15, height*0.25), pg.SRCALPHA)
+        self.build_surface.fill(self.hud_color)
 
         # select hud
         self.select_surface = pg.Surface((width*0.3, height*0.2), pg.SRCALPHA)
@@ -27,7 +27,7 @@ class Hud:
 
     def create_build_hud(self):
         render_pos = [self.width*0.84 + 10, self.height*0.74 + 10]
-        object_width = self.building_surface.get_width() // 5
+        object_width = self.build_surface.get_width() // 5
 
         tiles = []
 
@@ -66,15 +66,10 @@ class Hud:
 
     def draw(self, screen:pg.Surface):
 
-        if self.selected_tile is not None:
-            img = self.selected_tile["image"].copy()
-            img.set_alpha(100)
-            screen.blit(img, pg.mouse.get_pos())
-
         # resources
         screen.blit(self.resources_surface, (0,0))
-        # building
-        screen.blit(self.building_surface, (self.width*0.84, self.height*0.74))
+        # build
+        screen.blit(self.build_surface, (self.width*0.84, self.height*0.74))
         # select
         screen.blit(self.select_surface, (self.width*0.35, self.height*0.79))
 
