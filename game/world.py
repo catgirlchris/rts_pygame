@@ -26,7 +26,7 @@ class World():
 
         self.temp_tile = None
         self.examine_tile = None
-        #self.hover_tile = None
+        self.hover_tile = None
     
     def update(self, camera):
 
@@ -63,7 +63,7 @@ class World():
             
             if self.can_place_tile(grid_pos):
                 collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
-
+                self.hover_tile = grid_pos
                 if mouse_action[0] and collision:
                     self.examine_tile = grid_pos
 
@@ -85,11 +85,19 @@ class World():
                     screen.blit(self.tiles[tile], 
                         (render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
                         render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y))
+
+                    if self.hover_tile is not None:
+                        if (x == self.hover_tile[0]) and (y == self.hover_tile[1]):
+                            mask = pg.mask.from_surface(self.tiles[tile]).outline()
+                            mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
+                            pg.draw.polygon(screen, (150, 200, 200), mask, 3)
+                            
                     if self.examine_tile is not None:
                         if (x == self.examine_tile[0]) and (y == self.examine_tile[1]):
                             mask = pg.mask.from_surface(self.tiles[tile]).outline()
                             mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
                             pg.draw.polygon(screen, (255, 255, 255), mask, 3)
+                    
 
         if self.temp_tile is not None:
             iso_poly = self.temp_tile["iso_poly"]
