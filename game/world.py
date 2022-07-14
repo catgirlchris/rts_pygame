@@ -40,27 +40,27 @@ class World():
         self.temp_tile = None
         if self.hud.selected_tile is not None:
             grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
+            if grid_pos is not None:
+                if self.can_place_tile(grid_pos):
 
-            if self.can_place_tile(grid_pos):
+                    img = self.hud.selected_tile["image"].copy()
+                    img.set_alpha(100)
 
-                img = self.hud.selected_tile["image"].copy()
-                img.set_alpha(100)
+                    render_pos = self.world[grid_pos[0]][grid_pos[1]]["render_pos"]
+                    iso_poly = self.world[grid_pos[0]][grid_pos[1]]["iso_poly"]
+                    collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
 
-                render_pos = self.world[grid_pos[0]][grid_pos[1]]["render_pos"]
-                iso_poly = self.world[grid_pos[0]][grid_pos[1]]["iso_poly"]
-                collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
+                    self.temp_tile = {
+                        "image": img,
+                        "render_pos": render_pos,
+                        "iso_poly": iso_poly,
+                        "collision": collision,
+                    }
 
-                self.temp_tile = {
-                    "image": img,
-                    "render_pos": render_pos,
-                    "iso_poly": iso_poly,
-                    "collision": collision,
-                }
-
-                if mouse_action[0] and not collision:
-                    self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
-                    self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
-                    self.hud.selected_tile = None
+                    if mouse_action[0] and not collision:
+                        self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
+                        self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
+                        self.hud.selected_tile = None
         else:
             # examine
             grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
