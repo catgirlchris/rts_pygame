@@ -197,11 +197,21 @@ class World():
         return grid_x, grid_y
 
     def load_images(self):
-        block = pg.image.load('assets/graphics/block.png').convert_alpha()
-        tree = pg.image.load('assets/graphics/tree.png').convert_alpha()
-        rock = pg.image.load('assets/graphics/rock.png').convert_alpha()
+        block = pg.image.load("assets/graphics/block.png").convert_alpha()
+        building1 = pg.image.load("assets/graphics/building01.png").convert_alpha()
+        building2 = pg.image.load("assets/graphics/building02.png").convert_alpha()
+        tree = pg.image.load("assets/graphics/tree.png").convert_alpha()
+        rock = pg.image.load("assets/graphics/rock.png").convert_alpha()
 
-        return {'block': block, 'tree':tree, 'rock':rock}
+        images = {
+            "building1": building1,
+            "building2": building2,
+            "tree": tree,
+            "rock": rock,
+            "block": block
+        }
+
+        return images
 
 
     def can_place_tile(self, grid_pos):

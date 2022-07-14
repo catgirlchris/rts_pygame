@@ -93,12 +93,16 @@ class Hud:
 
 
     def load_images(self):
-        tree = pg.image.load('assets/graphics/tree.png').convert_alpha()
-        rock = pg.image.load('assets/graphics/rock.png').convert_alpha()
+        building1 = pg.image.load("assets/graphics/building01.png")
+        building2 = pg.image.load("assets/graphics/building02.png")
+        tree = pg.image.load("assets/graphics/tree.png")
+        rock = pg.image.load("assets/graphics/rock.png")
 
         images = {
-            "tree":tree,
-            "rock":rock,
+            "building1": building1,
+            "building2": building2,
+            "tree": tree,
+            "rock": rock
         }
 
         return images
