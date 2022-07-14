@@ -95,7 +95,7 @@ class Hud:
             screen.blit(img_scale, (self.width*0.35 + 10, self.height*0.79 + 40))
             #draw_text(screen, self.examined_tile["tile"], 40, (255, 255, 255), self.select_rect.center)
             draw_text(screen, self.examined_tile.name, 40, (255, 255, 255), self.select_rect.topleft)
-            draw_text(screen, str(self.examined_tile.counter), 40, (255, 255, 255), self.select_rect.center)
+            
             
 
         for tile in self.tiles:
