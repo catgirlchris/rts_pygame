@@ -26,7 +26,7 @@ class World():
 
         self.temp_tile = None
         self.examine_tile = None
-        self.hover_tile = None
+        self.hover_tile : tuple[int, int] = None
     
     def update(self, camera):
 
@@ -64,13 +64,13 @@ class World():
         else:
             # examine
             grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
-            
-            if self.can_place_tile(grid_pos):
-                collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
-                self.hover_tile = grid_pos
-                if mouse_action[0] and collision:
-                    self.examine_tile = grid_pos
-                    self.hud.examined_tile = self.world[grid_pos[0]][grid_pos[1]]
+            if grid_pos is not None:
+                if self.can_place_tile(grid_pos):
+                    collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
+                    self.hover_tile = grid_pos
+                    if mouse_action[0] and collision:
+                        self.examine_tile = grid_pos
+                        self.hud.examined_tile = self.world[grid_pos[0]][grid_pos[1]]
 
 
 
@@ -180,8 +180,10 @@ class World():
         iso_y = (x+y)/2
         return iso_x, iso_y
 
-    def mouse_to_grid(self, x, y, scroll):
-        # transform from world position from the mouse position
+    def mouse_to_grid(self, x:int, y:int, scroll:pg.Vector2):
+        '''Transform from world position from the mouse position.
+        Can return the hover_tile if mouse is out of the world.
+        If mouse is out of world and there is no hover tile then it returns None.'''
         #  (removing camera scroll and offset)
         world_x = x - scroll.x - self.grass_tiles.get_width()/2
         world_y = y - scroll.y
@@ -194,7 +196,15 @@ class World():
         grid_x = int(cart_x // TILE_SIZE)
         grid_y = int(cart_y // TILE_SIZE)
 
-        return grid_x, grid_y
+        # if grid_pos is in-bounds of the world
+        if (0 <= grid_x < self.grid_length_x) and (0 <= grid_y < self.grid_length_y):
+            return grid_x, grid_y
+        # else if there was a last grid hovered, return that
+        elif self.hover_tile is not None:
+            return self.hover_tile
+        # else return None
+        else:
+            return None
 
     def load_images(self):
         block = pg.image.load("assets/graphics/block.png").convert_alpha()
