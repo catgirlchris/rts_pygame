@@ -1,12 +1,15 @@
 import pygame as pg
 
 from game.buildings import Stonemasonry
+from game.resource_manager import ResourceManager
 from .utils import draw_text
 
 class Hud:
-    def __init__(self, width, height):
+    def __init__(self, width, height, resource_manager:ResourceManager):
+        self.resource_manager = resource_manager
         self.width = width
         self.height = height
+
 
         self.hud_color = (198, 155, 93, 175)
 
@@ -93,8 +96,9 @@ class Hud:
             screen.blit(tile["icon"], tile["rect"].topleft)
 
         pos = self.width - 400
-        for resource in ["wood:", "stone:", "gold:"]:
-            draw_text(screen, resource, 30, (255, 255, 255), (pos, 0))
+        for resource, resource_value in self.resource_manager.resources.items():
+            txt = resource + ": " + str(resource_value)
+            draw_text(screen, txt, 30, (255, 255, 255), (pos, 0))
             pos += 100
 
 

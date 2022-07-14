@@ -4,6 +4,7 @@ from .settings import TILE_SIZE
 from .utils import draw_text
 from .camera import Camera
 from .hud import Hud
+from .resource_manager import ResourceManager
 import sys
 
 class Game:
@@ -16,11 +17,14 @@ class Game:
         # entities
         self.entities = []
 
+        # resource manager
+        self.resource_manager = ResourceManager()
+
         # hud
-        self.hud = Hud(self.width, self.height)
+        self.hud = Hud(self.width, self.height, self.resource_manager)
 
         # world
-        self.world = World(50, 50, self.width, self.height, self.hud, self.entities)
+        self.world = World(50, 50, self.width, self.height, self.hud, self.entities, self.resource_manager)
 
         # camera
         self.camera = Camera(self.width, self.height)

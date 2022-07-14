@@ -12,9 +12,10 @@ import random
 
 class World():
 
-    def __init__(self, grid_length_x, grid_length_y, width, height, hud:Hud, entities):
+    def __init__(self, grid_length_x, grid_length_y, width, height, hud:Hud, entities, resource_manager):
         self.hud = hud
         self.entities = entities
+        self.resource_manager = resource_manager
         self.grid_length_x = grid_length_x
         self.grid_length_y = grid_length_y
         self.width = width
