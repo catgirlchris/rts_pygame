@@ -13,11 +13,14 @@ class Game:
         self.clock = clock
         self.width, self.height = self.screen.get_size()
 
+        # entities
+        self.entities = []
+
         # hud
         self.hud = Hud(self.width, self.height)
 
         # world
-        self.world = World(50, 50, self.width, self.height, self.hud)
+        self.world = World(50, 50, self.width, self.height, self.hud, self.entities)
 
         # camera
         self.camera = Camera(self.width, self.height)
@@ -46,6 +49,9 @@ class Game:
         self.camera.update()
         self.hud.update()
         self.world.update(self.camera)
+
+        for ent in self.entities:
+            ent.update()
 
     def draw(self):
         # clear

@@ -1,4 +1,6 @@
 import pygame as pg
+
+from game.buildings import Stonemasonry
 from .utils import draw_text
 
 class Hud:
@@ -78,10 +80,14 @@ class Hud:
         if self.examined_tile is not None:
             w, h = self.select_rect.width, self.select_rect.height
             screen.blit(self.select_surface, (self.width*0.35, self.height*0.79))
-            img = self.images[self.examined_tile["tile"]].copy()
-            img_scale = self.scale_image(img, h=h*0.90)
-            screen.blit(img_scale, (self.width*0.35 + 10, self.height*0.79 + 10))
-            draw_text(screen, self.examined_tile["tile"], 40, (255, 255, 255), self.select_rect.center)
+            #img = self.images[self.examined_tile["tile"]].copy()
+            img = self.examined_tile.image.copy()
+            img_scale = self.scale_image(img, h=h*0.70)
+            screen.blit(img_scale, (self.width*0.35 + 10, self.height*0.79 + 40))
+            #draw_text(screen, self.examined_tile["tile"], 40, (255, 255, 255), self.select_rect.center)
+            draw_text(screen, self.examined_tile.name, 40, (255, 255, 255), self.select_rect.topleft)
+            draw_text(screen, str(self.examined_tile.counter), 40, (255, 255, 255), self.select_rect.center)
+            
 
         for tile in self.tiles:
             screen.blit(tile["icon"], tile["rect"].topleft)
@@ -93,16 +99,12 @@ class Hud:
 
 
     def load_images(self):
-        building1 = pg.image.load("assets/graphics/building01.png")
-        building2 = pg.image.load("assets/graphics/building02.png")
-        tree = pg.image.load("assets/graphics/tree.png")
-        rock = pg.image.load("assets/graphics/rock.png")
+        lumbermill = pg.image.load("assets/graphics/building01.png")
+        stonemasonry = pg.image.load("assets/graphics/building02.png")
 
         images = {
-            "building1": building1,
-            "building2": building2,
-            "tree": tree,
-            "rock": rock
+            "lumbermill": lumbermill,
+            "stonemasonry": stonemasonry,
         }
 
         return images
