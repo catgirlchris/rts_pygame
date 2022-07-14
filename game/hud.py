@@ -81,6 +81,7 @@ class Hud:
             img = self.images[self.examined_tile["tile"]].copy()
             img_scale = self.scale_image(img, h=h*0.90)
             screen.blit(img_scale, (self.width*0.35 + 10, self.height*0.79 + 10))
+            draw_text(screen, self.examined_tile["tile"], 40, (255, 255, 255), self.select_rect.center)
 
         for tile in self.tiles:
             screen.blit(tile["icon"], tile["rect"].topleft)
