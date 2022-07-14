@@ -65,11 +65,11 @@ class World():
 
                     if mouse_action[0] and not collision:
                         if self.hud.selected_tile["name"] == "lumbermill":
-                            ent = Lumbermill(render_pos)
+                            ent = Lumbermill(render_pos, self.resource_manager)
                             self.entities.append(ent)
                             self.buildings[grid_pos[0]][grid_pos[1]] = ent
                         elif self.hud.selected_tile["name"] == "stonemasonry":
-                            ent = Stonemasonry(render_pos)
+                            ent = Stonemasonry(render_pos, self.resource_manager)
                             self.entities.append(ent)
                             self.buildings[grid_pos[0]][grid_pos[1]] = ent
 
