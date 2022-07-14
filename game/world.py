@@ -35,6 +35,7 @@ class World():
 
         if mouse_action[2]:
             self.examine_tile = None
+            self.hud.examined_tile = None
 
         self.temp_tile = None
         if self.hud.selected_tile is not None:
