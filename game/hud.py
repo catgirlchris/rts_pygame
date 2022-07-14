@@ -106,8 +106,8 @@ class Hud:
             image = pg.transform.scale(image, (int(w), int(h)))
 
         elif w == None:
-            scale = scale * image.get_height()
-            w = w / image.get_width()
+            scale = h / image.get_height()
+            w = scale * image.get_width()
             image = pg.transform.scale(image, (int(w), int(h)))
         else:
             image = pg.transform.scale(image, (int(w), int(h)))
