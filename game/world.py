@@ -33,6 +33,9 @@ class World():
         mouse_pos = pg.mouse.get_pos()
         mouse_action = pg.mouse.get_pressed()
 
+        if mouse_action[2]:
+            self.examine_tile = None
+
         self.temp_tile = None
         if self.hud.selected_tile is not None:
             grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
@@ -66,6 +69,7 @@ class World():
                 self.hover_tile = grid_pos
                 if mouse_action[0] and collision:
                     self.examine_tile = grid_pos
+                    self.hud.examined_tile = self.world[grid_pos[0]][grid_pos[1]]
 
 
 
