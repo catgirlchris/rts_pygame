@@ -52,6 +52,7 @@ class Hud:
                     "icon":image_scale,
                     "image":self.images[image_name],
                     "rect":rect,
+                    "affordable":True,
                 }
             )
 
@@ -68,7 +69,12 @@ class Hud:
             self.selected_tile = None
 
         for tile in self.tiles:
-            if tile["rect"].collidepoint(mouse_pos):
+            if self.resource_manager.is_affordable(tile["name"]):
+                tile["affordable"] = True
+            else:
+                tile["affordable"] = False
+
+            if tile["rect"].collidepoint(mouse_pos) and tile["affordable"]:
                 if mouse_action[0]:
                     self.selected_tile = tile
 
@@ -93,7 +99,11 @@ class Hud:
             
 
         for tile in self.tiles:
-            screen.blit(tile["icon"], tile["rect"].topleft)
+            icon = tile["icon"].copy()
+            if not tile["affordable"]:
+                icon.set_alpha(100)
+
+            screen.blit(icon, tile["rect"].topleft)
 
         pos = self.width - 400
         for resource, resource_value in self.resource_manager.resources.items():
