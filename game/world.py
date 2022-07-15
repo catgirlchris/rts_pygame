@@ -26,9 +26,11 @@ class World():
         # the polygons have double the witdh than height
         self.grass_tiles = pg.Surface((grid_length_x * TILE_SIZE * 2, grid_length_y * TILE_SIZE + TILE_SIZE*2)).convert_alpha()
         self.tiles = self.load_images()
-        self.world = self.create_world() 
+        self.world = self.create_world()
+        self.collision_matrix = self.create_collision_matrix()
 
         self.buildings = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
+        self.workers = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
 
         self.temp_tile = None
         self.examine_tile = None
@@ -63,6 +65,7 @@ class World():
                         "collision": collision,
                     }
 
+                    # creating a building
                     if mouse_action[0] and not collision:
                         if self.hud.selected_tile["name"] == "lumbermill":
                             ent = Lumbermill(render_pos, self.resource_manager)
@@ -75,6 +78,7 @@ class World():
 
                         #self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
                         self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
+                        self.collision_matrix[grid_pos[1]][grid_pos[0]] = 1 # reverse access to collision matrix
                         self.hud.selected_tile = None
         else:
             # examine
@@ -139,6 +143,14 @@ class World():
                             mask = pg.mask.from_surface(building.image).outline()
                             mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
                             pg.draw.polygon(screen, (255, 255, 255), mask, 3)
+
+
+                # draw WORKERS
+                worker = self.workers[x][y]
+                if worker is not None:
+                    screen.blit(worker.image, 
+                        (render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
+                        render_pos[1] - (worker.image.get_height() - TILE_SIZE) + camera.scroll.y))
 
         if self.temp_tile is not None:
             iso_poly = self.temp_tile["iso_poly"]
@@ -210,6 +222,18 @@ class World():
         }
 
         return out
+
+
+    def create_collision_matrix(self):
+        '''NOTE: this collision matrix is accesses reversed cm[y][x] instead of the usual.'''
+        # 1 is good to go, 0 is collision
+        collision_matrix = [[1 for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
+        for x in range(self.grid_length_x):
+            for y in range(self.grid_length_y):
+                if self.world[x][y]["collision"]:
+                    collision_matrix[y][x] = 0
+        return collision_matrix
+
 
     def cart_to_iso(self, x, y):
         iso_x = x-y

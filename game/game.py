@@ -1,10 +1,11 @@
 import pygame as pg
-from .world import World
-from .settings import TILE_SIZE
-from .utils import draw_text
-from .camera import Camera
-from .hud import Hud
-from .resource_manager import ResourceManager
+from game.world import World
+from game.settings import TILE_SIZE
+from game.utils import draw_text
+from game.camera import Camera
+from game.hud import Hud
+from game.resource_manager import ResourceManager
+from game.worker import Worker
 import sys
 
 class Game:
@@ -25,6 +26,9 @@ class Game:
 
         # world
         self.world = World(50, 50, self.width, self.height, self.hud, self.entities, self.resource_manager)
+
+        # workers
+        for _ in range(10): Worker(self.world.world[25][25], self.world)
 
         # camera
         self.camera = Camera(self.width, self.height)
