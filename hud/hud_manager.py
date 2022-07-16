@@ -12,16 +12,18 @@ class Hud:
         self.resource_manager = resource_manager
         self.width = width
         self.height = height
+        self.resources_hud_start_pos = (0,0)
+        self.build_hud_start_pos = (self.width*0.84, self.height*0.74)
 
 
         self.hud_color = utils.rgb(150, 100, 200, 175)
 
         # resources hud
-        self.resources_hud = ResourcesHud((width, height*0.03), self.hud_color, self.resource_manager)
+        self.resources_hud = ResourcesHud(self.resources_hud_start_pos, (width, height*0.03), self.hud_color, self.resource_manager)
 
         # build hud
         self.images = self.load_images()
-        self.build_hud = BuildHud((width*0.15, height*0.25), self.hud_color, self.images)
+        self.build_hud = BuildHud(self.build_hud_start_pos, (width*0.15, height*0.25), self.hud_color, self.resource_manager, self.images)
 
         # select hud
         self.select_surface = pg.Surface((width*0.3, height*0.2), pg.SRCALPHA)
@@ -40,7 +42,7 @@ class Hud:
             self.selected_tile = None
 
         #TODO mover a build_hud?
-        '''for tile in self.tiles:
+        for tile in self.build_hud.tiles:
             if self.resource_manager.is_affordable(tile["name"]):
                 tile["affordable"] = True
             else:
@@ -48,16 +50,16 @@ class Hud:
 
             if tile["rect"].collidepoint(mouse_pos) and tile["affordable"]:
                 if mouse_action[0]:
-                    self.selected_tile = tile'''
+                    self.selected_tile = tile
 
 
     def draw(self, screen:pg.Surface):
 
         # resources
-        self.resources_hud.draw(screen, (0,0))
+        self.resources_hud.draw(screen)
 
         # build
-        self.build_hud.draw(screen, (self.width*0.84, self.height*0.74))
+        self.build_hud.draw(screen)
         
         # select
         if self.examined_tile is not None:

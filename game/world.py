@@ -6,7 +6,7 @@ import noise
 from game.camera import Camera
 from .settings import TILE_SIZE
 from hud.hud_manager import Hud
-from .buildings import Lumbermill, Stonemasonry
+from game.buildings import Lumbermill, Stonemasonry
 
 import random
 
