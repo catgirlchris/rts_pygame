@@ -11,6 +11,7 @@ class ResourcesHud(PanelHud):
         self.resource_manager = resource_manager
 
     def draw(self, screen:pg.Surface, draw_pos:Tuple[int, int]=(0,0)):
+        #TODO improve and fix the positioning so it takes the panel into account
         super().draw(screen, draw_pos)
         pos = self.width - 400
         for resource, resource_value in self.resource_manager.resources.items():

@@ -3,7 +3,7 @@ from game.world import World
 from game.settings import TILE_SIZE
 from game.utils import draw_text
 from game.camera import Camera
-from hud.hud import Hud
+from hud.hud_manager import Hud
 from game.resource_manager import ResourceManager
 from game.worker import Worker
 import sys

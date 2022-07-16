@@ -10,3 +10,21 @@ def draw_text(screen:pg.Surface, text:str, size:int, color:tuple, pos:tuple()):
 
 def rgb(r,g,b,a):
     return r,g,b,a
+
+def scale_image(image:pg.image, w:int=None, h:int=None):
+    if (w == None) and (h == None):
+        pass
+
+    elif h == None:
+        scale = w / image.get_width()
+        h = scale * image.get_height()
+        image = pg.transform.scale(image, (int(w), int(h)))
+
+    elif w == None:
+        scale = h / image.get_height()
+        w = scale * image.get_width()
+        image = pg.transform.scale(image, (int(w), int(h)))
+    else:
+        image = pg.transform.scale(image, (int(w), int(h)))
+
+    return image

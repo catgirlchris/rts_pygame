@@ -7,7 +7,6 @@ from hud.build_hud import BuildHud
 from hud.resources_hud import ResourcesHud
 import game.utils as utils
 
-
 class Hud:
     def __init__(self, width, height, resource_manager:ResourceManager):
         self.resource_manager = resource_manager
@@ -66,19 +65,11 @@ class Hud:
             screen.blit(self.select_surface, (self.width*0.35, self.height*0.79))
             #img = self.images[self.examined_tile["tile"]].copy()
             img = self.examined_tile.image.copy()
-            img_scale = scale_image(img, h=h*0.70)
+            img_scale = utils.scale_image(img, h=h*0.70)
             screen.blit(img_scale, (self.width*0.35 + 10, self.height*0.79 + 40))
             #draw_text(screen, self.examined_tile["tile"], 40, (255, 255, 255), self.select_rect.center)
             utils.draw_text(screen, self.examined_tile.name, 40, (255, 255, 255), self.select_rect.topleft)
-            
-            
-        #TODO mover a build_hud?
-        '''for tile in self.tiles:
-            icon = tile["icon"].copy()
-            if not tile["affordable"]:
-                icon.set_alpha(100)
 
-            screen.blit(icon, tile["rect"].topleft)'''
 
 
     def load_images(self):
@@ -91,22 +82,3 @@ class Hud:
         }
 
         return images
-
-
-def scale_image(self, image:pg.image, w:int=None, h:int=None):
-    if (w == None) and (h == None):
-        pass
-
-    elif h == None:
-        scale = w / image.get_width()
-        h = scale * image.get_height()
-        image = pg.transform.scale(image, (int(w), int(h)))
-
-    elif w == None:
-        scale = h / image.get_height()
-        w = scale * image.get_width()
-        image = pg.transform.scale(image, (int(w), int(h)))
-    else:
-        image = pg.transform.scale(image, (int(w), int(h)))
-
-    return image
