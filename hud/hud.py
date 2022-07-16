@@ -3,32 +3,8 @@ import pygame as pg
 
 from game.buildings import Stonemasonry
 from game.resource_manager import ResourceManager
+from hud.resources_hud import ResourcesHud
 import game.utils as utils
-
-class PanelHud:
-    '''Hud base class to inherite.'''
-    def __init__(self, size:Tuple[int,int], hud_color):
-        self.width, self.height = size
-        self.hud_color = hud_color
-        self.surface = pg.Surface(size, pg.SRCALPHA)
-        self.rect = self.surface.get_rect(topleft=(0,0))
-        self.surface.fill(self.hud_color)
-
-    def draw(self, screen:pg.Surface, draw_pos:Tuple[int, int]=(0,0)):
-        screen.blit(self.surface, draw_pos)
-
-class ResourcesHud(PanelHud):
-    def __init__(self, size:Tuple[int,int], hud_color, resource_manager:ResourceManager):
-        super().__init__(size, hud_color)
-        self.resource_manager = resource_manager
-
-    def draw(self, screen:pg.Surface, draw_pos:Tuple[int, int]=(0,0)):
-        super().draw(screen, draw_pos)
-        pos = self.width - 400
-        for resource, resource_value in self.resource_manager.resources.items():
-            txt = resource + ": " + str(resource_value)
-            utils.draw_text(screen, txt, 30, (255, 255, 255), (pos, 0))
-            pos += 100
 
 
 class Hud:
@@ -42,9 +18,6 @@ class Hud:
 
         # resources hud
         self.resources_hud = ResourcesHud((width, height*0.03), self.hud_color, self.resource_manager)
-        '''self.resources_surface = pg.Surface((width, height*0.03), pg.SRCALPHA)
-        self.resources_rect = self.resources_surface.get_rect(topleft=(0,0))
-        self.resources_surface.fill(self.hud_color)'''
 
         # build hud
         self.build_surface = pg.Surface((width*0.15, height*0.25), pg.SRCALPHA)
@@ -133,12 +106,6 @@ class Hud:
                 icon.set_alpha(100)
 
             screen.blit(icon, tile["rect"].topleft)
-
-        '''pos = self.width - 400
-        for resource, resource_value in self.resource_manager.resources.items():
-            txt = resource + ": " + str(resource_value)
-            utils.draw_text(screen, txt, 30, (255, 255, 255), (pos, 0))
-            pos += 100'''
 
 
     def load_images(self):
