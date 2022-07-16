@@ -1,8 +1,19 @@
+from typing import Tuple
 import pygame as pg
 
 from game.buildings import Stonemasonry
 from game.resource_manager import ResourceManager
-from .utils import draw_text
+
+class ResourcesHud:
+    def __init__(self, size:Tuple[int,int], hud_color):
+        self.hud_color = hud_color
+        self.resources_surface = pg.Surface(size, pg.SRCALPHA)
+        self.resources_rect = self.resources_surface.get_rect(topleft=(0,0))
+        self.resources_surface.fill(self.hud_color)
+
+    def draw(self, screen:pg.Surface, draw_pos:Tuple[int, int]=(0,0)):
+        screen.blit(self.resources_surface, draw_pos)
+
 
 class Hud:
     def __init__(self, width, height, resource_manager:ResourceManager):
@@ -11,12 +22,13 @@ class Hud:
         self.height = height
 
 
-        self.hud_color = (198, 155, 93, 175)
+        self.hud_color = utils.rgb(150, 100, 200, 175)
 
         # resources hud
-        self.resources_surface = pg.Surface((width, height*0.03), pg.SRCALPHA)
+        self.resources_hud = ResourcesHud((width, height*0.03), self.hud_color)
+        '''self.resources_surface = pg.Surface((width, height*0.03), pg.SRCALPHA)
         self.resources_rect = self.resources_surface.get_rect(topleft=(0,0))
-        self.resources_surface.fill(self.hud_color)
+        self.resources_surface.fill(self.hud_color)'''
 
         # build hud
         self.build_surface = pg.Surface((width*0.15, height*0.25), pg.SRCALPHA)
@@ -82,7 +94,8 @@ class Hud:
     def draw(self, screen:pg.Surface):
 
         # resources
-        screen.blit(self.resources_surface, (0,0))
+        self.resources_hud.draw(screen, (0,0))
+        '''screen.blit(self.resources_surface, (0,0))'''
         # build
         screen.blit(self.build_surface, (self.width*0.84, self.height*0.74))
         # select
@@ -94,7 +107,7 @@ class Hud:
             img_scale = self.scale_image(img, h=h*0.70)
             screen.blit(img_scale, (self.width*0.35 + 10, self.height*0.79 + 40))
             #draw_text(screen, self.examined_tile["tile"], 40, (255, 255, 255), self.select_rect.center)
-            draw_text(screen, self.examined_tile.name, 40, (255, 255, 255), self.select_rect.topleft)
+            utils.draw_text(screen, self.examined_tile.name, 40, (255, 255, 255), self.select_rect.topleft)
             
             
 
@@ -108,7 +121,7 @@ class Hud:
         pos = self.width - 400
         for resource, resource_value in self.resource_manager.resources.items():
             txt = resource + ": " + str(resource_value)
-            draw_text(screen, txt, 30, (255, 255, 255), (pos, 0))
+            utils.draw_text(screen, txt, 30, (255, 255, 255), (pos, 0))
             pos += 100
 
 
