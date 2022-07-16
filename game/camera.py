@@ -1,37 +1,59 @@
+from turtle import right
+from typing import Tuple
 import pygame as pg
 
 
 class Camera:
 
-    def __init__(self, width:int, height:int):
+    def __init__(self, width:int, height:int, init_x:int=0, init_y:int=0):
 
         self.width = width
         self.height = height
 
-        self.scroll = pg.Vector2(0, 0)
+        self.top_border       = self.height*0.96
+        self.right_border     = self.width*0.96
+        self.bottom_border    = self.height*0.04
+        self.left_border      = self.width*0.04
+
+        self.scroll = pg.Vector2(init_x, init_y)
+
         self.dx = 0
         self.dy = 0
         self.speed = 25
-    
+
+
     def update(self):
         mouse_pos = pg.mouse.get_pos()
-
-        # x movement
-        if mouse_pos[0] > self.width*0.97:
-            self.dx = -self.speed
-        elif mouse_pos[0] < self.width*0.03:
-            self.dx = self.speed
+        
+        # get scroll direction
+        self.dx, self.dy = self.get_direction(mouse_pos)
+        
+        # update camera scroll
+        if (self.dx != 0) and (self.dy != 0):
+            self.scroll.x += self.dx*self.speed // 2
+            self.scroll.y += self.dy*self.speed // 2
         else:
-            self.dx = 0
+            self.scroll.x += self.dx*self.speed
+            self.scroll.y += self.dy*self.speed
+
+
+    def get_direction(self, mouse_pos:Tuple[int, int]):
+        '''Recoge la dirección a la que se quiere mover la cámara.'''
+        
+        # x movement
+        if mouse_pos[0] > self.right_border:
+            dx = -1
+        elif mouse_pos[0] < self.left_border:
+            dx = 1
+        else:
+            dx = 0
 
         # y movement
-        if mouse_pos[1] > self.height*0.97:
-            self.dy = -self.speed
-        elif mouse_pos[1] < self.height*0.03:
-            self.dy = self.speed
+        if mouse_pos[1] > self.top_border:
+            dy = -1
+        elif mouse_pos[1] < self.left_border:
+            dy = 1
         else:
-            self.dy = 0
+            dy = 0
 
-        # update camera scroll
-        self.scroll.x += self.dx
-        self.scroll.y += self.dy
+        return dx, dy

@@ -5,8 +5,8 @@ import noise
 
 from game.camera import Camera
 from .settings import TILE_SIZE
-from .hud import Hud
-from .buildings import Lumbermill, Stonemasonry
+from hud.hud_manager import Hud
+from game.buildings import Lumbermill, Stonemasonry
 
 import random
 
@@ -286,7 +286,7 @@ class World():
 
     def can_place_tile(self, grid_pos):
         mouse_on_panel = False
-        for rect in [ self.hud.resources_rect, self.hud.build_rect, self.hud.select_rect]:
+        for rect in [ self.hud.resources_hud.rect, self.hud.build_hud.rect, self.hud.select_rect]:
             if rect.collidepoint(pg.mouse.get_pos()):
                 mouse_on_panel = True
 

@@ -3,7 +3,7 @@ from game.world import World
 from game.settings import TILE_SIZE
 from game.utils import draw_text
 from game.camera import Camera
-from game.hud import Hud
+from hud.hud_manager import Hud
 from game.resource_manager import ResourceManager
 from game.worker import Worker
 import sys
@@ -31,7 +31,8 @@ class Game:
         for _ in range(10): Worker(self.world.world[25][25], self.world)
 
         # camera
-        self.camera = Camera(self.width, self.height)
+        cam_start_pos = -(self.world.grid_length_x*TILE_SIZE//2 + 600), -(self.world.grid_length_y*TILE_SIZE//4+300)
+        self.camera = Camera(self.width, self.height, cam_start_pos[0], cam_start_pos[1])
 
         
 
