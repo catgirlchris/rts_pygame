@@ -6,7 +6,7 @@ def main():
     playing = True
     pg.init()
     pg.mixer.init()
-    screen = pg.display.set_mode((1080, 720), flags=pg.RESIZABLE)
+    screen = pg.display.set_mode((1800, 980), flags=pg.RESIZABLE)
     clock = pg.time.Clock()
 
     # implement menus
