@@ -5,8 +5,7 @@ import pygame as pg
 
 class Camera:
 
-
-    def __init__(self, width:int, height:int):
+    def __init__(self, width:int, height:int, init_x:int=0, init_y:int=0):
 
         self.width = width
         self.height = height
@@ -16,7 +15,8 @@ class Camera:
         self.bottom_border    = self.height*0.04
         self.left_border      = self.width*0.04
 
-        self.scroll = pg.Vector2(0, 0)
+        self.scroll = pg.Vector2(init_x, init_y)
+
         self.dx = 0
         self.dy = 0
         self.speed = 25
