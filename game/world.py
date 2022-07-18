@@ -1,4 +1,5 @@
 from distutils.command.build_clib import build_clib
+from typing import List
 import pygame as pg
 import random
 import noise
