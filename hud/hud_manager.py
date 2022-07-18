@@ -31,7 +31,10 @@ class Hud:
         self.select_surface.fill(self.hud_color)
 
         self.selected_tile = None
+        ''' build_hud selected tile '''
+        
         self.examined_tile = None
+        ''' examine_hud selected tile'''
 
 
     def update(self):

@@ -43,10 +43,12 @@ class World():
         mouse_pos = pg.mouse.get_pos()
         mouse_action = pg.mouse.get_pressed()
 
+        # right click deselect
         if mouse_action[2]:
             self.examine_tile = None
             self.hud.examined_tile = None
 
+        # building functionality
         self.temp_tile = None
         if self.hud.selected_tile is not None:
             grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
