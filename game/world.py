@@ -71,14 +71,7 @@ class World():
 
                     # creating a building
                     if mouse_action[0] and not collision:
-                        if self.hud.selected_tile["name"] == "lumbermill":
-                            ent = Lumbermill(render_pos, self.resource_manager)
-                            self.entities.append(ent)
-                            self.buildings[grid_pos[0]][grid_pos[1]] = ent
-                        elif self.hud.selected_tile["name"] == "stonemasonry":
-                            ent = Stonemasonry(render_pos, self.resource_manager)
-                            self.entities.append(ent)
-                            self.buildings[grid_pos[0]][grid_pos[1]] = ent
+                        self.add_building(render_pos, grid_pos, self.resource_manager, self.entities, self.buildings)
 
                         #self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
                         self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
@@ -97,6 +90,16 @@ class World():
                         self.examine_tile = grid_pos
                         self.hud.examined_tile = building
 
+
+    def add_building(self, render_pos, grid_pos, resource_manager:ResourceManager, entities:List, buildings:List):
+        if self.hud.selected_tile["name"] == "lumbermill":
+            ent = Lumbermill(render_pos, self.resource_manager)
+            self.entities.append(ent)
+            self.buildings[grid_pos[0]][grid_pos[1]] = ent
+        elif self.hud.selected_tile["name"] == "stonemasonry":
+            ent = Stonemasonry(render_pos, self.resource_manager)
+            self.entities.append(ent)
+            self.buildings[grid_pos[0]][grid_pos[1]] = ent
 
 
 
