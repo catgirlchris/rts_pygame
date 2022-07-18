@@ -249,7 +249,7 @@ class World():
 
     def mouse_to_grid(self, x:int, y:int, scroll:pg.Vector2):
         '''Transform from world position from the mouse position.
-        Can return the hover_tile if mouse is out of the world.
+        Can return the hover_tile if mouse is not out of the world.
         If mouse is out of world and there is no hover tile then it returns None.'''
         #  (removing camera scroll and offset)
         world_x = x - scroll.x - self.grass_tiles.get_width()/2
