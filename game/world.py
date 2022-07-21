@@ -37,7 +37,22 @@ class World():
         self.temp_tile = None
         self.examine_tile = None
         self.hover_tile : tuple[int, int] = None
-    
+
+    def create_temp_tile(self, img, grid_pos):
+        img.set_alpha(100)
+        render_pos = self.world[grid_pos[0]][grid_pos[1]]["render_pos"]
+        iso_poly = self.world[grid_pos[0]][grid_pos[1]]["iso_poly"]
+        collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
+
+        temp_tile = {
+            "image": img,
+            "render_pos": render_pos,
+            "iso_poly": iso_poly,
+            "collision": collision,
+        }
+
+        return temp_tile
+
     def update(self, camera:Camera):
 
         mouse_pos = pg.mouse.get_pos()
@@ -56,21 +71,13 @@ class World():
             if grid_pos is not None:
                 # si se puede colocar 
                 if self.can_place_tile(grid_pos):
-
+                    # crea temp tile
                     img = self.hud.selected_tile["image"].copy()
-                    img.set_alpha(100)
+                    self.temp_tile = self.create_temp_tile(img, grid_pos)
 
                     render_pos = self.world[grid_pos[0]][grid_pos[1]]["render_pos"]
-                    iso_poly = self.world[grid_pos[0]][grid_pos[1]]["iso_poly"]
                     collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
-
-                    self.temp_tile = {
-                        "image": img,
-                        "render_pos": render_pos,
-                        "iso_poly": iso_poly,
-                        "collision": collision,
-                    }
-
+                    
                     # creating a building
                     if mouse_action[0] and not collision:
                         self.add_building(render_pos, grid_pos, self.resource_manager, self.entities, self.buildings)
