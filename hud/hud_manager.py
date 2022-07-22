@@ -6,32 +6,41 @@ from game.resource_manager import ResourceManager
 from hud.build_hud import BuildHud
 from hud.resources_hud import ResourcesHud
 import game.utils as utils
+from hud.select_hud import SelectHud
 
 class Hud:
     def __init__(self, width, height, resource_manager:ResourceManager):
         self.resource_manager = resource_manager
         self.width = width
         self.height = height
+
         self.resources_hud_start_pos = (0,0)
+        self.resources_hud_start_size = (self.width, self.height*0.03)
+
         self.build_hud_start_pos = (self.width*0.84, self.height*0.74)
+        self.build_hud_start_size = (self.width*0.15, self.height*0.25)
+
+        self.select_hud_start_pos = (self.width*0.3, self.height*0.78)
+        self.select_hud_start_size = (self.width*0.35, self.height*0.20)
 
 
         self.hud_color = utils.rgb(150, 100, 200, 175)
+        self.images = self.load_images()
 
         # resources hud
-        self.resources_hud = ResourcesHud(self.resources_hud_start_pos, (width, height*0.03), self.hud_color, self.resource_manager)
+        self.resources_hud = ResourcesHud(self.resources_hud_start_pos, self.resources_hud_start_size, self.hud_color, self.resource_manager)
 
         # build hud
-        self.images = self.load_images()
-        self.build_hud = BuildHud(self.build_hud_start_pos, (width*0.15, height*0.25), self.hud_color, self.resource_manager, self.images)
+        self.build_hud = BuildHud(self.build_hud_start_pos, self.build_hud_start_size, self.hud_color, self.resource_manager, self.images)
 
         # select hud
-        self.select_surface = pg.Surface((width*0.3, height*0.2), pg.SRCALPHA)
-        self.select_rect = self.select_surface.get_rect(topleft=(self.width*0.35, self.height*0.79))
-        self.select_surface.fill(self.hud_color)
+        self.select_hud = SelectHud(self.select_hud_start_pos, self.select_hud_start_size, self.hud_color, self.images)
 
         self.selected_tile = None
+        ''' build_hud selected tile '''
+        
         self.examined_tile = None
+        ''' examine_hud selected tile'''
 
 
     def update(self):
@@ -62,15 +71,7 @@ class Hud:
         self.build_hud.draw(screen)
         
         # select
-        if self.examined_tile is not None:
-            w, h = self.select_rect.width, self.select_rect.height
-            screen.blit(self.select_surface, (self.width*0.35, self.height*0.79))
-            #img = self.images[self.examined_tile["tile"]].copy()
-            img = self.examined_tile.image.copy()
-            img_scale = utils.scale_image(img, h=h*0.70)
-            screen.blit(img_scale, (self.width*0.35 + 10, self.height*0.79 + 40))
-            #draw_text(screen, self.examined_tile["tile"], 40, (255, 255, 255), self.select_rect.center)
-            utils.draw_text(screen, self.examined_tile.name, 40, (255, 255, 255), self.select_rect.topleft)
+        self.select_hud.draw(screen, self.examined_tile)
 
 
 

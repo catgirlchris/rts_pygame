@@ -1,9 +1,11 @@
 from distutils.command.build_clib import build_clib
+from typing import List
 import pygame as pg
 import random
 import noise
 
 from game.camera import Camera
+from game.resource_manager import ResourceManager
 from .settings import TILE_SIZE
 from hud.hud_manager import Hud
 from game.buildings import Lumbermill, Stonemasonry
@@ -35,64 +37,81 @@ class World():
         self.temp_tile = None
         self.examine_tile = None
         self.hover_tile : tuple[int, int] = None
-    
-    def update(self, camera):
+
+    def create_temp_tile(self, img, grid_pos):
+        img.set_alpha(100)
+        render_pos = self.world[grid_pos[0]][grid_pos[1]]["render_pos"]
+        iso_poly = self.world[grid_pos[0]][grid_pos[1]]["iso_poly"]
+        collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
+
+        temp_tile = {
+            "image": img,
+            "render_pos": render_pos,
+            "iso_poly": iso_poly,
+            "collision": collision,
+        }
+
+        return temp_tile
+
+    def update(self, camera:Camera):
 
         mouse_pos = pg.mouse.get_pos()
         mouse_action = pg.mouse.get_pressed()
 
+        # right click deselect
         if mouse_action[2]:
             self.examine_tile = None
             self.hud.examined_tile = None
 
+        # building functionality
         self.temp_tile = None
-        if self.hud.selected_tile is not None:
-            grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
-            if grid_pos is not None:
-                if self.can_place_tile(grid_pos):
-
+        m_grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
+        if m_grid_pos is not None:
+            if self.can_place_tile(m_grid_pos):
+                if self.hud.selected_tile is not None:
+                    # crea temp tile
                     img = self.hud.selected_tile["image"].copy()
-                    img.set_alpha(100)
+                    self.temp_tile = self.create_temp_tile(img, m_grid_pos)
 
-                    render_pos = self.world[grid_pos[0]][grid_pos[1]]["render_pos"]
-                    iso_poly = self.world[grid_pos[0]][grid_pos[1]]["iso_poly"]
-                    collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
-
-                    self.temp_tile = {
-                        "image": img,
-                        "render_pos": render_pos,
-                        "iso_poly": iso_poly,
-                        "collision": collision,
-                    }
-
+                    render_pos = self.world[m_grid_pos[0]][m_grid_pos[1]]["render_pos"]
+                    collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
+                    
                     # creating a building
                     if mouse_action[0] and not collision:
-                        if self.hud.selected_tile["name"] == "lumbermill":
-                            ent = Lumbermill(render_pos, self.resource_manager)
-                            self.entities.append(ent)
-                            self.buildings[grid_pos[0]][grid_pos[1]] = ent
-                        elif self.hud.selected_tile["name"] == "stonemasonry":
-                            ent = Stonemasonry(render_pos, self.resource_manager)
-                            self.entities.append(ent)
-                            self.buildings[grid_pos[0]][grid_pos[1]] = ent
-
-                        #self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
-                        self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
-                        self.collision_matrix[grid_pos[1]][grid_pos[0]] = 1 # reverse access to collision matrix
-                        self.hud.selected_tile = None
-        else:
-            # examine
-            grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
-            if grid_pos is not None:
-                if self.can_place_tile(grid_pos):
-                    building = self.buildings[grid_pos[0]][grid_pos[1]]
-                    #collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
-                    self.hover_tile = grid_pos
+                        self.add_building(render_pos, m_grid_pos, self.resource_manager, self.entities, self.buildings)
+        
+                # si no hay algo seleccionado en build_hud
+                else:
+                    # TODO refactor can_place_tile to better suit the needs here
+                    # checks if tile is not behind a hud_rect
+                    building = self.buildings[m_grid_pos[0]][m_grid_pos[1]]
+                    collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
+                    self.hover_tile = m_grid_pos
+                    
                     #if mouse_action[0] and collision:
                     if mouse_action[0] and (building is not None):
-                        self.examine_tile = grid_pos
+                        self.examine_tile = m_grid_pos
                         self.hud.examined_tile = building
+                    # TODO  examine tile like tree or rock
+                    '''elif mouse_action[0] and (collision):
+                        self.examine_tile = m_grid_pos
+                        self.hud.examined_tile = m_grid_pos'''
 
+
+    def add_building(self, render_pos, grid_pos, resource_manager:ResourceManager, entities:List, buildings:List):
+        if self.hud.selected_tile["name"] == "lumbermill":
+            ent = Lumbermill(render_pos, self.resource_manager)
+            self.entities.append(ent)
+            self.buildings[grid_pos[0]][grid_pos[1]] = ent
+        elif self.hud.selected_tile["name"] == "stonemasonry":
+            ent = Stonemasonry(render_pos, self.resource_manager)
+            self.entities.append(ent)
+            self.buildings[grid_pos[0]][grid_pos[1]] = ent
+
+        #self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
+        self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
+        self.collision_matrix[grid_pos[1]][grid_pos[0]] = 1 # reverse access to collision matrix
+        self.hud.selected_tile = None
 
 
 
@@ -113,13 +132,13 @@ class World():
                         (render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
                         render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y))
 
-                    '''if self.hover_tile is not None:
+                    '''if (self.hover_tile is not None) and (self.buildings[x][y] is None):
                         if (x == self.hover_tile[0]) and (y == self.hover_tile[1]):
                             mask = pg.mask.from_surface(self.tiles[tile]).outline()
                             mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
-                            pg.draw.polygon(screen, (150, 200, 200), mask, 3)
+                            pg.draw.polygon(screen, (150, 200, 200), mask, 3)'''
                             
-                    if self.examine_tile is not None:
+                    '''if self.examine_tile is not None:
                         if (x == self.examine_tile[0]) and (y == self.examine_tile[1]):
                             mask = pg.mask.from_surface(self.tiles[tile]).outline()
                             mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
@@ -127,7 +146,7 @@ class World():
                 
                 # draw buildings
                 building = self.buildings[x][y]
-                if building is not None:
+                if (building is not None) and (self.buildings[x][y]) is not None:
                     screen.blit(building.image, 
                         (render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
                         render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y))
@@ -152,8 +171,10 @@ class World():
                         (render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
                         render_pos[1] - (worker.image.get_height() - TILE_SIZE) + camera.scroll.y))
 
+        # dibuja cuadro blanco/rojo cuando hay algo seleccionado en build_hud
         if self.temp_tile is not None:
-            iso_poly = self.temp_tile["iso_poly"]
+            self.draw_surrounding_polygon(screen, self.temp_tile, camera, self.grass_tiles)
+            '''iso_poly = self.temp_tile["iso_poly"]
             iso_poly = [(x + self.grass_tiles.get_width()/2 + camera.scroll.x, y + camera.scroll.y) for x,y in iso_poly]
             if self.temp_tile["collision"]:
                 pg.draw.polygon(screen, (255, 0, 0), iso_poly, 3)
@@ -166,7 +187,43 @@ class World():
                     render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
                     render_pos[1] - (self.temp_tile["image"].get_height() - TILE_SIZE) + camera.scroll.y
                 )
+            )'''
+
+        # HOVER 2: out of x,y loop
+        if self.hover_tile is not None:
+            #if (x == self.hover_tile[0]) and (y == self.hover_tile[1]):
+            tile_name = self.world[self.hover_tile[0]][self.hover_tile[1]]["tile"]
+            render_pos = self.world[self.hover_tile[0]][self.hover_tile[1]]["render_pos"]
+            if tile_name != "":
+                mask = pg.mask.from_surface( self.tiles[tile_name] ).outline()
+                #mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
+                mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile_name].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
+                pg.draw.polygon(screen, (150, 200, 200), mask, 3)
+        
+        # EXAMINE 2: out of x,y loop
+        '''if self.examine_tile is not None:
+            if (x == self.examine_tile[0]) and (y == self.examine_tile[1]):
+                mask = pg.mask.from_surface(self.tiles[tile]).outline()
+                mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
+                pg.draw.polygon(screen, (255, 255, 255), mask, 3)'''
+
+    def draw_surrounding_polygon(self, screen:pg.Surface, temp_tile, camera:Camera, grass_tiles):
+        '''Dibuja un cuadrado alrededor de temptile.'''
+        iso_poly = temp_tile["iso_poly"]
+        iso_poly = [(x + grass_tiles.get_width()/2 + camera.scroll.x, y + camera.scroll.y) for x,y in iso_poly]
+        if temp_tile["collision"]:
+            pg.draw.polygon(screen, (255, 0, 0), iso_poly, 3)
+        else:
+            pg.draw.polygon(screen, (255, 255, 255), iso_poly, 3)
+        render_pos = temp_tile["render_pos"]
+        screen.blit(
+            temp_tile["image"],
+            (
+                render_pos[0] + grass_tiles.get_width()/2 + camera.scroll.x,
+                render_pos[1] - (temp_tile["image"].get_height() - TILE_SIZE) + camera.scroll.y
             )
+        )
+
 
     def create_world(self):
         world = []
@@ -242,7 +299,7 @@ class World():
 
     def mouse_to_grid(self, x:int, y:int, scroll:pg.Vector2):
         '''Transform from world position from the mouse position.
-        Can return the hover_tile if mouse is out of the world.
+        Can return the hover_tile if mouse is not out of the world.
         If mouse is out of world and there is no hover tile then it returns None.'''
         #  (removing camera scroll and offset)
         world_x = x - scroll.x - self.grass_tiles.get_width()/2
@@ -286,7 +343,7 @@ class World():
 
     def can_place_tile(self, grid_pos):
         mouse_on_panel = False
-        for rect in [ self.hud.resources_hud.rect, self.hud.build_hud.rect, self.hud.select_rect]:
+        for rect in [ self.hud.resources_hud.rect, self.hud.build_hud.rect, self.hud.select_hud.rect]:
             if rect.collidepoint(pg.mouse.get_pos()):
                 mouse_on_panel = True
 
