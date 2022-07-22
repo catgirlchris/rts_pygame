@@ -66,36 +66,36 @@ class World():
         # building functionality
         self.temp_tile = None
         m_grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
+        if m_grid_pos is not None:
+            if self.can_place_tile(m_grid_pos):
+                if self.hud.selected_tile is not None:
+                    # crea temp tile
+                    img = self.hud.selected_tile["image"].copy()
+                    self.temp_tile = self.create_temp_tile(img, m_grid_pos)
 
-        if self.can_place_tile(m_grid_pos):
-            if self.hud.selected_tile is not None:
-                # crea temp tile
-                img = self.hud.selected_tile["image"].copy()
-                self.temp_tile = self.create_temp_tile(img, m_grid_pos)
-
-                render_pos = self.world[m_grid_pos[0]][m_grid_pos[1]]["render_pos"]
-                collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
-                
-                # creating a building
-                if mouse_action[0] and not collision:
-                    self.add_building(render_pos, m_grid_pos, self.resource_manager, self.entities, self.buildings)
-    
-            # si no hay algo seleccionado en build_hud
-            else:
-                # TODO refactor can_place_tile to better suit the needs here
-                # checks if tile is not behind a hud_rect
-                building = self.buildings[m_grid_pos[0]][m_grid_pos[1]]
-                collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
-                self.hover_tile = m_grid_pos
-                
-                #if mouse_action[0] and collision:
-                if mouse_action[0] and (building is not None):
-                    self.examine_tile = m_grid_pos
-                    self.hud.examined_tile = building
-                # TODO  examine tile like tree or rock
-                '''elif mouse_action[0] and (collision):
-                    self.examine_tile = m_grid_pos
-                    self.hud.examined_tile = m_grid_pos'''
+                    render_pos = self.world[m_grid_pos[0]][m_grid_pos[1]]["render_pos"]
+                    collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
+                    
+                    # creating a building
+                    if mouse_action[0] and not collision:
+                        self.add_building(render_pos, m_grid_pos, self.resource_manager, self.entities, self.buildings)
+        
+                # si no hay algo seleccionado en build_hud
+                else:
+                    # TODO refactor can_place_tile to better suit the needs here
+                    # checks if tile is not behind a hud_rect
+                    building = self.buildings[m_grid_pos[0]][m_grid_pos[1]]
+                    collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
+                    self.hover_tile = m_grid_pos
+                    
+                    #if mouse_action[0] and collision:
+                    if mouse_action[0] and (building is not None):
+                        self.examine_tile = m_grid_pos
+                        self.hud.examined_tile = building
+                    # TODO  examine tile like tree or rock
+                    '''elif mouse_action[0] and (collision):
+                        self.examine_tile = m_grid_pos
+                        self.hud.examined_tile = m_grid_pos'''
 
 
     def add_building(self, render_pos, grid_pos, resource_manager:ResourceManager, entities:List, buildings:List):
@@ -343,7 +343,7 @@ class World():
 
     def can_place_tile(self, grid_pos):
         mouse_on_panel = False
-        for rect in [ self.hud.resources_hud.rect, self.hud.build_hud.rect, self.hud.select_rect]:
+        for rect in [ self.hud.resources_hud.rect, self.hud.build_hud.rect, self.hud.select_hud.rect]:
             if rect.collidepoint(pg.mouse.get_pos()):
                 mouse_on_panel = True
 
