@@ -173,7 +173,8 @@ class World():
 
         # dibuja cuadro blanco/rojo cuando hay algo seleccionado en build_hud
         if self.temp_tile is not None:
-            iso_poly = self.temp_tile["iso_poly"]
+            self.draw_surrounding_polygon(screen, self.temp_tile, camera, self.grass_tiles)
+            '''iso_poly = self.temp_tile["iso_poly"]
             iso_poly = [(x + self.grass_tiles.get_width()/2 + camera.scroll.x, y + camera.scroll.y) for x,y in iso_poly]
             if self.temp_tile["collision"]:
                 pg.draw.polygon(screen, (255, 0, 0), iso_poly, 3)
@@ -186,7 +187,7 @@ class World():
                     render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
                     render_pos[1] - (self.temp_tile["image"].get_height() - TILE_SIZE) + camera.scroll.y
                 )
-            )
+            )'''
 
         # HOVER 2: out of x,y loop
         if self.hover_tile is not None:
@@ -205,6 +206,24 @@ class World():
                 mask = pg.mask.from_surface(self.tiles[tile]).outline()
                 mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
                 pg.draw.polygon(screen, (255, 255, 255), mask, 3)'''
+
+    def draw_surrounding_polygon(self, screen:pg.Surface, temp_tile, camera:Camera, grass_tiles):
+        '''Dibuja un cuadrado alrededor de temptile.'''
+        iso_poly = temp_tile["iso_poly"]
+        iso_poly = [(x + grass_tiles.get_width()/2 + camera.scroll.x, y + camera.scroll.y) for x,y in iso_poly]
+        if temp_tile["collision"]:
+            pg.draw.polygon(screen, (255, 0, 0), iso_poly, 3)
+        else:
+            pg.draw.polygon(screen, (255, 255, 255), iso_poly, 3)
+        render_pos = temp_tile["render_pos"]
+        screen.blit(
+            temp_tile["image"],
+            (
+                render_pos[0] + grass_tiles.get_width()/2 + camera.scroll.x,
+                render_pos[1] - (temp_tile["image"].get_height() - TILE_SIZE) + camera.scroll.y
+            )
+        )
+
 
     def create_world(self):
         world = []
