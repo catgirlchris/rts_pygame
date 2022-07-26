@@ -160,7 +160,7 @@ class World():
 
         # dibuja cuadro blanco/rojo cuando hay algo seleccionado en build_hud
         if self.building_preview is not None:
-            self.building_preview.draw_surrounding_polygon(screen, camera, self.grass_tiles)
+            self.building_preview.draw(screen, camera, self.grass_tiles)
 
 
         # HOVER 2: out of x,y loop
