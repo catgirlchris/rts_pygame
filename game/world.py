@@ -344,8 +344,9 @@ class World():
     def can_place_tile(self, grid_pos):
         '''Comprueba si dada (x,y), esas coordenadas estan dentro de los limites y si hay un panel dentro.'''
         mouse_on_panel = False
-        for rect in [ self.hud.resources_hud.rect, self.hud.build_hud.rect, self.hud.select_hud.rect]:
-            if rect.collidepoint(pg.mouse.get_pos()):
+        for hud_panel in self.hud.hud_list:
+            hud_rect = hud_panel.rect
+            if hud_rect.collidepoint(pg.mouse.get_pos()):
                 mouse_on_panel = True
 
         world_bounds = (0 <= grid_pos[0] <= self.grid_length_x) and (0 <= grid_pos[1] <= self.grid_length_x)

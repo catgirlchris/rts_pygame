@@ -13,6 +13,7 @@ class Hud:
         self.resource_manager = resource_manager
         self.width = width
         self.height = height
+        self.hud_list = list()
 
         self.resources_hud_start_pos = (0,0)
         self.resources_hud_start_size = (self.width, self.height*0.03)
@@ -29,12 +30,15 @@ class Hud:
 
         # resources hud
         self.resources_hud = ResourcesHud(self.resources_hud_start_pos, self.resources_hud_start_size, self.hud_color, self.resource_manager)
+        self.hud_list.append(self.resources_hud)
 
         # build hud
         self.build_hud = BuildHud(self.build_hud_start_pos, self.build_hud_start_size, self.hud_color, self.resource_manager, self.images)
+        self.hud_list.append(self.build_hud)
 
         # select hud
         self.select_hud = SelectHud(self.select_hud_start_pos, self.select_hud_start_size, self.hud_color, self.images)
+        self.hud_list.append(self.select_hud)
 
         self.selected_tile = None
         ''' build_hud selected tile '''
