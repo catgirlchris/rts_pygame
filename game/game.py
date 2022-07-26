@@ -19,7 +19,7 @@ from hud.hud_manager import Hud
 class Game:
     """Game module.
     """
-    def __init__(self, screen : pg.Surface, clock : pg.time.Clock):
+    def __init__(self, screen: pg.Surface, clock: pg.time.Clock):
         self.screen = screen
         self.clock = clock
         self.width, self.height = self.screen.get_size()
@@ -45,10 +45,9 @@ class Game:
 
         # camera
         grid_size = (self.world.grid_length_x, self.world.grid_length_y)
-        cam_start_pos = -(grid_size[0]*TILE_SIZE//2 + 600), -(grid_size[1]*TILE_SIZE//4+300)
+        cam_start_pos = -(
+            grid_size[0] * TILE_SIZE // 2 + 600), -(grid_size[1] * TILE_SIZE // 4 + 300)
         self.camera = Camera(self.width, self.height, cam_start_pos[0], cam_start_pos[1])
-
-
 
     def run(self):
         """Run method."""
@@ -69,7 +68,7 @@ class Game:
                 if event.key == pg.K_ESCAPE:
                     pg.quit()
                     sys.exit()
-    
+
     def update(self):
         """Update method."""
         self.camera.update()
