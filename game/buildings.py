@@ -27,12 +27,25 @@ class Building:
                 self.resource_manager.resources[self.resource] += 1
                 self.resource_cooldown = now
 
-    def draw(self, screen: pg.Surface, render_pos, camera: Camera, grass_tiles):
+    def draw(self, screen: pg.Surface, render_pos, camera: Camera, grass_tiles, draw_outline=False):
         screen.blit(
             self.image,
             (render_pos[0] + grass_tiles.get_width() / 2 + camera.scroll.x,
              render_pos[1] - (self.image.get_height() - TILE_SIZE) + camera.scroll.y)
         )
+
+        if draw_outline:
+            self.draw_outline(screen, render_pos, camera, grass_tiles)
+
+    def draw_outline(self, screen: pg.Surface, render_pos, camera: Camera, grass_tiles):
+        mask = pg.mask.from_surface(self.image).outline()
+        mask = [
+            (x + render_pos[0] + grass_tiles.get_width() / 2 + camera.scroll.x,
+                y + render_pos[1] - (
+                    self.image.get_height() - TILE_SIZE) + camera.scroll.y)
+            for x, y in mask
+        ]
+        pg.draw.polygon(screen, (150, 200, 200), mask, 3)
 
 
 class Lumbermill(Building):

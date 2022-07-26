@@ -1,5 +1,9 @@
 import pygame as pg
 
+from game.camera import Camera
+from game.settings import TILE_SIZE
+
+
 class Tile:
 
     def __init__(self, grid_x, grid_y, rect, iso_poly, minx, miny, name):
@@ -11,11 +15,9 @@ class Tile:
         self.name = name
         self.collision = False if self.name == "" else True
 
-        '''self.tile = {
-            'grid': [grid_x, grid_y],
-            'cart_rect': rect,
-            'iso_poly': iso_poly,
-            'render_pos': [minx, miny],
-            'tile': tile,
-            'collision': False if tile == "" else True,
-        }'''
+    def draw(self, screen: pg.Surface, render_pos, camera: Camera, grass_tiles, image: pg.image):
+        screen.blit(
+            image,
+            (render_pos[0] + grass_tiles.get_width() / 2 + camera.scroll.x,
+             render_pos[1] - (image.get_height() - TILE_SIZE) + camera.scroll.y)
+        )
