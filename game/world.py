@@ -13,7 +13,7 @@ from game.settings import TILE_SIZE
 from game.camera import Camera
 from game.resource_manager import ResourceManager
 from game.tile import Tile
-from game.buildings import Lumbermill, Stonemasonry
+from game.buildings import Building, Lumbermill, Stonemasonry
 
 from hud.building_preview import BuildingPreview
 from hud.hud_manager import Hud
@@ -42,7 +42,7 @@ class World():
         self.world: List[List[Tile]] = self.create_world()
         self.collision_matrix = self.create_collision_matrix()
 
-        self.buildings = [
+        self.buildings: List[List[Building]] = [
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
         self.workers = [
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
@@ -136,11 +136,7 @@ class World():
                 # draw buildings
                 building = self.buildings[x][y]
                 if (building is not None) and (self.buildings[x][y]) is not None:
-                    screen.blit(
-                        building.image,
-                        (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
-                         render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y)
-                    )
+                    building.draw(screen, render_pos, camera, self.grass_tiles)
 
                     if self.hover_tile is not None:
                         if (x == self.hover_tile[0]) and (y == self.hover_tile[1]):
