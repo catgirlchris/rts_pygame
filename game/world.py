@@ -1,11 +1,12 @@
 from distutils.command.build_clib import build_clib
-from typing import List
+from typing import List, Tuple
 import pygame as pg
 import random
 import noise
 
 from game.camera import Camera
 from game.resource_manager import ResourceManager
+from hud.building_preview import BuildingPreview
 from .settings import TILE_SIZE
 from hud.hud_manager import Hud
 from game.buildings import Lumbermill, Stonemasonry
@@ -34,24 +35,10 @@ class World():
         self.buildings = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
         self.workers = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
 
-        self.temp_tile = None
+        self.building_preview:BuildingPreview = None
         self.examine_tile = None
         self.hover_tile : tuple[int, int] = None
 
-    def create_temp_tile(self, img, grid_pos):
-        img.set_alpha(100)
-        render_pos = self.world[grid_pos[0]][grid_pos[1]]["render_pos"]
-        iso_poly = self.world[grid_pos[0]][grid_pos[1]]["iso_poly"]
-        collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
-
-        temp_tile = {
-            "image": img,
-            "render_pos": render_pos,
-            "iso_poly": iso_poly,
-            "collision": collision,
-        }
-
-        return temp_tile
 
     def update(self, camera:Camera):
 
@@ -64,14 +51,14 @@ class World():
             self.hud.examined_tile = None
 
         # building functionality
-        self.temp_tile = None
+        self.building_preview = None
         m_grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
         if m_grid_pos is not None:
             if self.can_place_tile(m_grid_pos):
                 if self.hud.selected_tile is not None:
                     # crea temp tile
                     img = self.hud.selected_tile["image"].copy()
-                    self.temp_tile = self.create_temp_tile(img, m_grid_pos)
+                    self.building_preview = BuildingPreview(img, m_grid_pos, self.world)
 
                     render_pos = self.world[m_grid_pos[0]][m_grid_pos[1]]["render_pos"]
                     collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
@@ -172,28 +159,17 @@ class World():
                         render_pos[1] - (worker.image.get_height() - TILE_SIZE) + camera.scroll.y))
 
         # dibuja cuadro blanco/rojo cuando hay algo seleccionado en build_hud
-        if self.temp_tile is not None:
-            self.draw_surrounding_polygon(screen, self.temp_tile, camera, self.grass_tiles)
-            '''iso_poly = self.temp_tile["iso_poly"]
-            iso_poly = [(x + self.grass_tiles.get_width()/2 + camera.scroll.x, y + camera.scroll.y) for x,y in iso_poly]
-            if self.temp_tile["collision"]:
-                pg.draw.polygon(screen, (255, 0, 0), iso_poly, 3)
-            else:
-                pg.draw.polygon(screen, (255, 255, 255), iso_poly, 3)
-            render_pos = self.temp_tile["render_pos"]
-            screen.blit(
-                self.temp_tile["image"],
-                (
-                    render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
-                    render_pos[1] - (self.temp_tile["image"].get_height() - TILE_SIZE) + camera.scroll.y
-                )
-            )'''
+        if self.building_preview is not None:
+            self.building_preview.draw_surrounding_polygon(screen, camera, self.grass_tiles)
+
 
         # HOVER 2: out of x,y loop
         if self.hover_tile is not None:
             #if (x == self.hover_tile[0]) and (y == self.hover_tile[1]):
             tile_name = self.world[self.hover_tile[0]][self.hover_tile[1]]["tile"]
             render_pos = self.world[self.hover_tile[0]][self.hover_tile[1]]["render_pos"]
+            grid_pos = self.world[self.hover_tile[0]][self.hover_tile[1]]["grid"]
+
             if tile_name != "":
                 mask = pg.mask.from_surface( self.tiles[tile_name] ).outline()
                 #mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
@@ -207,22 +183,6 @@ class World():
                 mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
                 pg.draw.polygon(screen, (255, 255, 255), mask, 3)'''
 
-    def draw_surrounding_polygon(self, screen:pg.Surface, temp_tile, camera:Camera, grass_tiles):
-        '''Dibuja un cuadrado alrededor de temptile.'''
-        iso_poly = temp_tile["iso_poly"]
-        iso_poly = [(x + grass_tiles.get_width()/2 + camera.scroll.x, y + camera.scroll.y) for x,y in iso_poly]
-        if temp_tile["collision"]:
-            pg.draw.polygon(screen, (255, 0, 0), iso_poly, 3)
-        else:
-            pg.draw.polygon(screen, (255, 255, 255), iso_poly, 3)
-        render_pos = temp_tile["render_pos"]
-        screen.blit(
-            temp_tile["image"],
-            (
-                render_pos[0] + grass_tiles.get_width()/2 + camera.scroll.x,
-                render_pos[1] - (temp_tile["image"].get_height() - TILE_SIZE) + camera.scroll.y
-            )
-        )
 
 
     def create_world(self):
