@@ -1,23 +1,22 @@
+from typing import List
 import pygame as pg
 from game.camera import Camera
-
 from game.settings import TILE_SIZE
-
-
+from game.tile import Tile
 
 class BuildingPreview:
 
     # def create_temp_tile(self, img, grid_pos):
-    def __init__(self, img:pg.image, grid_pos, world_tiles):
+    def __init__(self, img: pg.image, grid_pos, world_tiles: List[List[Tile]]):
         '''Crea el temptile a partir de una imagen y la posicion en el grid.\n'''
         self.image = img
         self.world_tiles = world_tiles
-        self.show_surrounding_polygon:bool = True
+        self.show_surrounding_polygon: bool = True
 
         self.image.set_alpha(100)
-        self.render_pos = self.world_tiles[grid_pos[0]][grid_pos[1]]["render_pos"]
-        self.iso_poly = self.world_tiles[grid_pos[0]][grid_pos[1]]["iso_poly"]
-        self.collision = self.world_tiles[grid_pos[0]][grid_pos[1]]["collision"]
+        self.render_pos = self.world_tiles[grid_pos[0]][grid_pos[1]].render_pos
+        self.iso_poly = self.world_tiles[grid_pos[0]][grid_pos[1]].iso_poly
+        self.collision = self.world_tiles[grid_pos[0]][grid_pos[1]].collision
 
 
     def draw(self, screen:pg.Surface, camera:Camera, grass_tiles):

@@ -16,7 +16,6 @@ from game.worker import Worker
 from hud.hud_manager import Hud
 
 
-
 class Game:
     """Game module.
     """
@@ -38,7 +37,7 @@ class Game:
 
         # world
         self.world = World(
-            50, 50, (self.width, self.height), self.hud, self.entities, self.resource_manager)
+            (50, 50), (self.width, self.height), self.hud, self.entities, self.resource_manager)
 
         # workers
         for _ in range(10):

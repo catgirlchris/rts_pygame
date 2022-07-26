@@ -8,10 +8,11 @@ from typing import List, Tuple
 import random
 import pygame as pg
 import noise
-from game.settings import TILE_SIZE
 
+from game.settings import TILE_SIZE
 from game.camera import Camera
 from game.resource_manager import ResourceManager
+from game.tile import Tile
 from game.buildings import Lumbermill, Stonemasonry
 
 from hud.building_preview import BuildingPreview
@@ -23,28 +24,28 @@ class World():
     """
 
     def __init__(
-            self, grid_size: Tuple[int, int], width, height,
+            self, grid_size: Tuple[int, int], screen_size: Tuple[int, int],
             hud: Hud, entities: List, resource_manager: ResourceManager):
         self.hud = hud
         self.entities = entities
         self.resource_manager = resource_manager
         self.grid_length_x = grid_size[0]
-        self.grid_length_y = grid_size[0]
-        self.width = width
-        self.height = height
+        self.grid_length_y = grid_size[1]
+        self.width = screen_size[0]
+        self.height = screen_size[1]
 
         self.perlin_scale = self.grid_length_x / 2
 
         # the polygons have double the witdh than height
         self.grass_tiles = pg.Surface((self.grid_length_x * TILE_SIZE * 2, self.grid_length_y * TILE_SIZE + TILE_SIZE*2)).convert_alpha()
         self.tile_images = self.load_images()
-        self.world = self.create_world()
+        self.world: List[List[Tile]] = self.create_world()
         self.collision_matrix = self.create_collision_matrix()
 
         self.buildings = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
         self.workers = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
 
-        self.building_preview:BuildingPreview = None
+        self.building_preview: BuildingPreview = None
         self.examine_tile = None
         self.hover_tile: Tuple[int, int] = None
 
@@ -67,8 +68,8 @@ class World():
                 img = self.hud.selected_tile["image"].copy()
                 self.building_preview = BuildingPreview(img, m_grid_pos, self.world)
 
-                render_pos = self.world[m_grid_pos[0]][m_grid_pos[1]]["render_pos"]
-                collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
+                render_pos = self.world[m_grid_pos[0]][m_grid_pos[1]].render_pos
+                collision = self.world[m_grid_pos[0]][m_grid_pos[1]].collision
 
                 # construye edificio
                 if mouse_action[0] and not collision:
@@ -79,7 +80,7 @@ class World():
                 # TODO refactor can_place_tile to better suit the needs here
                 # checks if tile is not behind a hud_rect
                 building = self.buildings[m_grid_pos[0]][m_grid_pos[1]]
-                collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
+                collision = self.world[m_grid_pos[0]][m_grid_pos[1]].collision
                 self.hover_tile = m_grid_pos
 
                 # if mouse_action[0] and collision:
@@ -103,7 +104,7 @@ class World():
             self.buildings[grid_pos[0]][grid_pos[1]] = ent
 
         #self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
-        self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
+        self.world[grid_pos[0]][grid_pos[1]].collision = True
         self.collision_matrix[grid_pos[1]][grid_pos[0]] = 1 # reverse access to collision matrix
         self.hud.selected_tile = None
 
@@ -114,14 +115,15 @@ class World():
         # draw other things
         for x in range(self.grid_length_x):
             for y in range(self.grid_length_y):
-                render_pos = self.world[x][y]['render_pos']
+                render_pos = self.world[x][y].render_pos
 
                 # drawing world tile_images
-                tile = self.world[x][y]['tile']
+                tile = self.world[x][y].name
                 if tile != '':
-                    screen.blit(self.tile_images[tile], 
+                    screen.blit(
+                        self.tile_images[tile],
                         (render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
-                        render_pos[1] - (self.tile_images[tile].get_height() - TILE_SIZE) + camera.scroll.y)
+                            render_pos[1] - (self.tile_images[tile].get_height() - TILE_SIZE) + camera.scroll.y)
                     )
 
                     '''if (self.hover_tile is not None) and (self.buildings[x][y] is None):
@@ -178,9 +180,9 @@ class World():
         # HOVER 2: out of x,y loop
         if self.hover_tile is not None:
             # if (x == self.hover_tile[0]) and (y == self.hover_tile[1]):
-            tile_name = self.world[self.hover_tile[0]][self.hover_tile[1]]["tile"]
-            render_pos = self.world[self.hover_tile[0]][self.hover_tile[1]]["render_pos"]
-            # grid_pos = self.world[self.hover_tile[0]][self.hover_tile[1]]["grid"]
+            tile_name = self.world[self.hover_tile[0]][self.hover_tile[1]].name
+            render_pos = self.world[self.hover_tile[0]][self.hover_tile[1]].render_pos
+            # grid_pos = self.world[self.hover_tile[0]][self.hover_tile[1]].grid
 
             if tile_name != "":
                 mask = pg.mask.from_surface(self.tile_images[tile_name]).outline()
@@ -218,7 +220,7 @@ class World():
                 world_tile = self.grid_to_world(grid_x, grid_y)
                 world[grid_x].append(world_tile)
 
-                render_pos = world_tile['render_pos']
+                render_pos = world_tile.render_pos
                 # half the tile_images will be in negative X coordinates, so we offset the x
                 self.grass_tiles.blit(
                     self.tile_images['block'],
@@ -245,26 +247,18 @@ class World():
         perlin = 100 * noise.pnoise2(grid_x / self.perlin_scale, grid_y / self.perlin_scale)
 
         if (perlin >= 15) or (perlin <= -35):
-            tile = 'tree'
+            name = 'tree'
         else:
             if r == 1:
-                tile = 'tree'
+                name = 'tree'
             elif r == 2:
-                tile = 'rock'
+                name = 'rock'
             else:
-                tile = ''
+                name = ''
 
-        out = {
-            'grid': [grid_x, grid_y],
-            'cart_rect': rect,
-            'iso_poly': iso_poly,
-            'render_pos': [minx, miny],
-            'tile': tile,
-            'collision': False if tile == "" else True,
-        }
+        tile_out = Tile(grid_x, grid_y, rect, iso_poly, minx, miny, name)
 
-        return out
-
+        return tile_out
 
     def create_collision_matrix(self):
         '''NOTE: this collision matrix is accesses reversed cm[y][x] instead of the usual.'''
@@ -273,7 +267,7 @@ class World():
             [1 for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
         for x in range(self.grid_length_x):
             for y in range(self.grid_length_y):
-                if self.world[x][y]["collision"]:
+                if self.world[x][y].collision:
                     collision_matrix[y][x] = 0
         return collision_matrix
 
