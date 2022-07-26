@@ -1,4 +1,3 @@
-from turtle import right
 from typing import Tuple
 import pygame as pg
 

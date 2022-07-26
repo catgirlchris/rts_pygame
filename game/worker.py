@@ -5,13 +5,14 @@ import random
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
+from game.tile import Tile
 
 from game.world import World
 
 
 class Worker:
 
-    def __init__(self, tile, world:World):
+    def __init__(self, tile: Tile, world: World):
 
         self.world = world
         self.tile = tile
@@ -21,7 +22,7 @@ class Worker:
         self.image = pg.transform.scale(image, (image.get_width()*2, image.get_height()*2))
         
         # pathfinding
-        self.world.workers[tile["grid"][0]][tile["grid"][1]] = self
+        self.world.workers[tile.grid[0]][tile.grid[1]] = self
         self.move_timer = pg.time.get_ticks()
 
         self.create_path()
@@ -32,11 +33,11 @@ class Worker:
         while (searching_for_path):
             x = random.randint(0, self.world.grid_length_x - 1)
             y = random.randint(0, self.world.grid_length_y - 1)
-            dest_tile = self.world.world[x][y]
+            dest_tile: Tile = self.world.world[x][y]
             
-            if not dest_tile["collision"]:
+            if not dest_tile.collision:
                 self.grid = Grid(matrix=self.world.collision_matrix)
-                self.start = self.grid.node(self.tile["grid"][0], self.tile["grid"][1])
+                self.start = self.grid.node(self.tile.grid[0], self.tile.grid[1])
                 self.end = self.grid.node(x, y)
                 finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
                 self.path_index = 0
@@ -44,7 +45,7 @@ class Worker:
                 searching_for_path = False
 
     def change_tile(self, new_tile):
-        self.world.workers[self.tile["grid"][0]][self.tile["grid"][1]] = None
+        self.world.workers[self.tile.grid[0]][self.tile.grid[1]] = None
         self.world.workers[new_tile[0]][new_tile[1]] = self
         self.tile = self.world.world[new_tile[0]][new_tile[1]]
 
