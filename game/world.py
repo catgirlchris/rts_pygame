@@ -28,7 +28,7 @@ class World():
 
         # the polygons have double the witdh than height
         self.grass_tiles = pg.Surface((grid_length_x * TILE_SIZE * 2, grid_length_y * TILE_SIZE + TILE_SIZE*2)).convert_alpha()
-        self.tiles = self.load_images()
+        self.tile_images = self.load_images()
         self.world = self.create_world()
         self.collision_matrix = self.create_collision_matrix()
 
@@ -41,7 +41,7 @@ class World():
 
 
     def update(self, camera:Camera):
-
+        '''Metodo update que maneja todo lo perteneciente a World.\n'''
         mouse_pos = pg.mouse.get_pos()
         mouse_action = pg.mouse.get_pressed()
 
@@ -50,42 +50,42 @@ class World():
             self.examine_tile = None
             self.hud.examined_tile = None
 
-        # building functionality
+        # preview y construccion de edificio
         self.building_preview = None
         m_grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
-        if m_grid_pos is not None:
-            if self.can_place_tile(m_grid_pos):
-                if self.hud.selected_tile is not None:
-                    # crea temp tile
-                    img = self.hud.selected_tile["image"].copy()
-                    self.building_preview = BuildingPreview(img, m_grid_pos, self.world)
+        if (m_grid_pos is not None) and (self.can_place_tile(m_grid_pos)):
+            if self.hud.selected_tile is not None:
+                # crea building_preview
+                img = self.hud.selected_tile["image"].copy()
+                self.building_preview = BuildingPreview(img, m_grid_pos, self.world)
 
-                    render_pos = self.world[m_grid_pos[0]][m_grid_pos[1]]["render_pos"]
-                    collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
-                    
-                    # creating a building
-                    if mouse_action[0] and not collision:
-                        self.add_building(render_pos, m_grid_pos, self.resource_manager, self.entities, self.buildings)
-        
-                # si no hay algo seleccionado en build_hud
-                else:
-                    # TODO refactor can_place_tile to better suit the needs here
-                    # checks if tile is not behind a hud_rect
-                    building = self.buildings[m_grid_pos[0]][m_grid_pos[1]]
-                    collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
-                    self.hover_tile = m_grid_pos
-                    
-                    #if mouse_action[0] and collision:
-                    if mouse_action[0] and (building is not None):
-                        self.examine_tile = m_grid_pos
-                        self.hud.examined_tile = building
-                    # TODO  examine tile like tree or rock
-                    '''elif mouse_action[0] and (collision):
-                        self.examine_tile = m_grid_pos
-                        self.hud.examined_tile = m_grid_pos'''
+                render_pos = self.world[m_grid_pos[0]][m_grid_pos[1]]["render_pos"]
+                collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
+                
+                # construye edificio
+                if mouse_action[0] and not collision:
+                    self.add_building(render_pos, m_grid_pos, self.resource_manager, self.entities, self.buildings)
+    
+            # si no hay algo seleccionado en build_hud
+            else:
+                # TODO refactor can_place_tile to better suit the needs here
+                # checks if tile is not behind a hud_rect
+                building = self.buildings[m_grid_pos[0]][m_grid_pos[1]]
+                collision = self.world[m_grid_pos[0]][m_grid_pos[1]]["collision"]
+                self.hover_tile = m_grid_pos
+                
+                #if mouse_action[0] and collision:
+                if mouse_action[0] and (building is not None):
+                    self.examine_tile = m_grid_pos
+                    self.hud.examined_tile = building
+                # TODO  examine tile like tree or rock
+                '''elif mouse_action[0] and (collision):
+                    self.examine_tile = m_grid_pos
+                    self.hud.examined_tile = m_grid_pos'''
 
 
     def add_building(self, render_pos, grid_pos, resource_manager:ResourceManager, entities:List, buildings:List):
+        '''Añade un edificio a la lista de entidades, a la lista de edificios y actualiza el mundo. y las colisiones.'''
         if self.hud.selected_tile["name"] == "lumbermill":
             ent = Lumbermill(render_pos, self.resource_manager)
             self.entities.append(ent)
@@ -112,23 +112,23 @@ class World():
             for y in range(self.grid_length_y):
                 render_pos = self.world[x][y]['render_pos']
                 
-                # drawing world tiles
+                # drawing world tile_images
                 tile = self.world[x][y]['tile']
                 if tile != '':
-                    screen.blit(self.tiles[tile], 
+                    screen.blit(self.tile_images[tile], 
                         (render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x,
-                        render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y))
+                        render_pos[1] - (self.tile_images[tile].get_height() - TILE_SIZE) + camera.scroll.y))
 
                     '''if (self.hover_tile is not None) and (self.buildings[x][y] is None):
                         if (x == self.hover_tile[0]) and (y == self.hover_tile[1]):
-                            mask = pg.mask.from_surface(self.tiles[tile]).outline()
-                            mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
+                            mask = pg.mask.from_surface(self.tile_images[tile]).outline()
+                            mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tile_images[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
                             pg.draw.polygon(screen, (150, 200, 200), mask, 3)'''
                             
                     '''if self.examine_tile is not None:
                         if (x == self.examine_tile[0]) and (y == self.examine_tile[1]):
-                            mask = pg.mask.from_surface(self.tiles[tile]).outline()
-                            mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
+                            mask = pg.mask.from_surface(self.tile_images[tile]).outline()
+                            mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tile_images[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
                             pg.draw.polygon(screen, (255, 255, 255), mask, 3)'''
                 
                 # draw buildings
@@ -171,16 +171,16 @@ class World():
             grid_pos = self.world[self.hover_tile[0]][self.hover_tile[1]]["grid"]
 
             if tile_name != "":
-                mask = pg.mask.from_surface( self.tiles[tile_name] ).outline()
+                mask = pg.mask.from_surface( self.tile_images[tile_name] ).outline()
                 #mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
-                mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile_name].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
+                mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tile_images[tile_name].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
                 pg.draw.polygon(screen, (150, 200, 200), mask, 3)
         
         # EXAMINE 2: out of x,y loop
         '''if self.examine_tile is not None:
             if (x == self.examine_tile[0]) and (y == self.examine_tile[1]):
-                mask = pg.mask.from_surface(self.tiles[tile]).outline()
-                mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
+                mask = pg.mask.from_surface(self.tile_images[tile]).outline()
+                mask = [(x + render_pos[0] + self.grass_tiles.get_width()/2 + camera.scroll.x, y + render_pos[1] - (self.tile_images[tile].get_height() - TILE_SIZE) + camera.scroll.y) for x,y in mask]
                 pg.draw.polygon(screen, (255, 255, 255), mask, 3)'''
 
 
@@ -195,9 +195,9 @@ class World():
                 world[grid_x].append(world_tile)
 
                 render_pos = world_tile['render_pos']
-                # half the tiles will be in negative X coordinates, so we offset the x
+                # half the tile_images will be in negative X coordinates, so we offset the x
                 self.grass_tiles.blit(
-                    self.tiles['block'],
+                    self.tile_images['block'],
                     (render_pos[0] + self.grass_tiles.get_width()/2, render_pos[1])
                     )
         
