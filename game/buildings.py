@@ -27,25 +27,33 @@ class Building:
                 self.resource_manager.resources[self.resource] += 1
                 self.resource_cooldown = now
 
-    def draw(self, screen: pg.Surface, render_pos, camera: Camera, grass_tiles, draw_outline=False):
+    def draw(self, screen: pg.Surface, render_pos, hover_outline=False, selected_outline=False):
         screen.blit(
             self.image,
-            (render_pos[0] + grass_tiles.get_width() / 2 + camera.scroll.x,
-             render_pos[1] - (self.image.get_height() - TILE_SIZE) + camera.scroll.y)
+            (render_pos[0],
+             render_pos[1])
         )
 
-        if draw_outline:
-            self.draw_outline(screen, render_pos, camera, grass_tiles)
+        if hover_outline:
+            self.draw_hover_outline(screen, render_pos)
 
-    def draw_outline(self, screen: pg.Surface, render_pos, camera: Camera, grass_tiles):
+        if selected_outline:
+            self.draw_selected_outline(screen, render_pos)
+
+    def draw_hover_outline(self, screen: pg.Surface, render_pos):
+        self.draw_outline(screen, render_pos, (150, 200, 200), 3)
+
+    def draw_selected_outline(self, screen: pg.Surface, render_pos):
+        self.draw_outline(screen, render_pos, (255, 255, 255), 3)
+
+    def draw_outline(self, screen: pg.Surface, render_pos, color, width: int):
         mask = pg.mask.from_surface(self.image).outline()
         mask = [
-            (x + render_pos[0] + grass_tiles.get_width() / 2 + camera.scroll.x,
-                y + render_pos[1] - (
-                    self.image.get_height() - TILE_SIZE) + camera.scroll.y)
+            (x + render_pos[0],
+             y + render_pos[1])
             for x, y in mask
         ]
-        pg.draw.polygon(screen, (150, 200, 200), mask, 3)
+        pg.draw.polygon(screen, color, mask, width)
 
 
 class Lumbermill(Building):

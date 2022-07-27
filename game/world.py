@@ -14,6 +14,7 @@ from game.camera import Camera
 from game.resource_manager import ResourceManager
 from game.tile import Tile
 from game.buildings import Building, Lumbermill, Stonemasonry
+from game.worker import Worker
 
 from hud.building_preview import BuildingPreview
 from hud.hud_manager import Hud
@@ -37,14 +38,18 @@ class World():
         self.perlin_scale = self.grid_length_x / 2
 
         # the polygons have double the witdh than height
-        self.grass_tiles = pg.Surface((self.grid_length_x * TILE_SIZE * 2, self.grid_length_y * TILE_SIZE + TILE_SIZE*2)).convert_alpha()
+        self.grass_tiles = pg.Surface(
+            (self.grid_length_x * TILE_SIZE * 2,
+             self.grid_length_y * TILE_SIZE + TILE_SIZE * 2)
+        ).convert_alpha()
+
         self.tile_images = self.load_images()
         self.world: List[List[Tile]] = self.create_world()
         self.collision_matrix = self.create_collision_matrix()
 
         self.buildings: List[List[Building]] = [
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
-        self.workers = [
+        self.workers: List[List[Worker]] = [
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
 
         self.building_preview: BuildingPreview = None
@@ -124,32 +129,34 @@ class World():
 
                 # drawing world tile_images
                 tile = self.world[x][y]
+                tile_img = self.tile_images[tile.name]
                 if tile.name != '':
                     tile.draw(
                         screen,
-                        render_pos,
+                        (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
+                         render_pos[1] - (tile_img.get_height() - TILE_SIZE) + camera.scroll.y),
                         camera, self.grass_tiles,
-                        self.tile_images[tile.name]
+                        tile_img
                     )
 
                 # draw buildings
                 building = self.buildings[x][y]
                 if (building is not None):
-                    draw_outline = False
+                    draw_hover_outline = False
+                    draw_selected_outline = False
                     if (self.hover_tile is not None) and (
                             (x == self.hover_tile[0]) and (y == self.hover_tile[1])):
-                        draw_outline = True
+                        draw_hover_outline = True
 
-                    building.draw(screen, render_pos, camera, self.grass_tiles, draw_outline)
+                    if (self.examine_tile is not None) and (
+                            (x == self.examine_tile[0]) and (y == self.examine_tile[1])):
+                        draw_selected_outline = True
 
-                    if self.examine_tile is not None:
-                        if (x == self.examine_tile[0]) and (y == self.examine_tile[1]):
-                            mask = pg.mask.from_surface(building.image).outline()
-                            mask = [
-                                (x + render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
-                                 y + render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y)
-                                for x, y in mask]
-                            pg.draw.polygon(screen, (255, 255, 255), mask, 3)
+                    building.draw(
+                        screen,
+                        (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
+                         render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y),
+                        draw_hover_outline, draw_selected_outline)
 
                 # draw WORKERS
                 worker = self.workers[x][y]
