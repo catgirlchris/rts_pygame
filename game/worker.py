@@ -1,12 +1,10 @@
 
-from encodings import search_function
 import pygame as pg
 import random
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 from game.tile import Tile
-
 from game.world import World
 
 
@@ -19,8 +17,11 @@ class Worker:
         self.world.entities.append(self)
         image = pg.image.load("assets/graphics/worker.png").convert_alpha()
         self.name = "worker"
-        self.image = pg.transform.scale(image, (image.get_width()*2, image.get_height()*2))
-        
+        self.image = pg.transform.scale(
+            image,
+            (image.get_width() * 2,
+             image.get_height() * 2))
+
         # pathfinding
         self.world.workers[tile.grid[0]][tile.grid[1]] = self
         self.move_timer = pg.time.get_ticks()
@@ -34,7 +35,7 @@ class Worker:
             x = random.randint(0, self.world.grid_length_x - 1)
             y = random.randint(0, self.world.grid_length_y - 1)
             dest_tile: Tile = self.world.world[x][y]
-            
+
             if not dest_tile.collision:
                 self.grid = Grid(matrix=self.world.collision_matrix)
                 self.start = self.grid.node(self.tile.grid[0], self.tile.grid[1])

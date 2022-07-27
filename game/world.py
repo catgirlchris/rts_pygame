@@ -9,12 +9,13 @@ import random
 import pygame as pg
 import noise
 
+import game
 from game.settings import TILE_SIZE
 from game.camera import Camera
 from game.resource_manager import ResourceManager
 from game.tile import Tile
 from game.buildings import Building, Lumbermill, Stonemasonry
-from game.worker import Worker
+#from game.worker import Worker as Worker
 
 from hud.building_preview import BuildingPreview
 from hud.hud_manager import Hud
@@ -49,7 +50,7 @@ class World():
 
         self.buildings: List[List[Building]] = [
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
-        self.workers: List[List[Worker]] = [
+        self.workers: List[List[game.Worker]] = [
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
 
         self.building_preview: BuildingPreview = None
@@ -80,7 +81,12 @@ class World():
 
                 # construye edificio
                 if mouse_action[0] and not collision:
-                    self.add_building(render_pos, m_grid_pos, self.resource_manager, self.entities, self.buildings)
+                    self.add_building(
+                        render_pos,
+                        m_grid_pos,
+                        self.resource_manager,
+                        self.entities,
+                        self.buildings)
 
             # si no hay algo seleccionado en build_hud
             else:
@@ -129,25 +135,29 @@ class World():
 
                 # drawing world tile_images
                 tile = self.world[x][y]
-                tile_img = self.tile_images[tile.name]
                 if tile.name != '':
+                    draw_hover_outline = False
+                    if (self.hover_tile is not None) and (
+                            (x == self.hover_tile[0]) and (y == self.hover_tile[1])):
+                        draw_hover_outline = True
+
+                    tile_img = self.tile_images[tile.name]
                     tile.draw(
                         screen,
                         (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
                          render_pos[1] - (tile_img.get_height() - TILE_SIZE) + camera.scroll.y),
-                        camera, self.grass_tiles,
-                        tile_img
+                        tile_img, hover_outline=draw_hover_outline
                     )
 
                 # draw buildings
                 building = self.buildings[x][y]
                 if (building is not None):
                     draw_hover_outline = False
-                    draw_selected_outline = False
                     if (self.hover_tile is not None) and (
                             (x == self.hover_tile[0]) and (y == self.hover_tile[1])):
                         draw_hover_outline = True
 
+                    draw_selected_outline = False
                     if (self.examine_tile is not None) and (
                             (x == self.examine_tile[0]) and (y == self.examine_tile[1])):
                         draw_selected_outline = True
@@ -156,7 +166,7 @@ class World():
                         screen,
                         (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
                          render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y),
-                        draw_hover_outline, draw_selected_outline)
+                        hover_outline=draw_hover_outline, selected_outline=draw_selected_outline)
 
                 # draw WORKERS
                 worker = self.workers[x][y]
@@ -176,15 +186,13 @@ class World():
             tile_name = self.world[self.hover_tile[0]][self.hover_tile[1]].name
             render_pos = self.world[self.hover_tile[0]][self.hover_tile[1]].render_pos
 
-            if tile_name != "":
-                mask = pg.mask.from_surface(self.tile_images[tile_name]).outline()
-                mask = [
-                    (x + render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
-                     y + render_pos[1] - (
-                        self.tile_images[tile_name].get_height() - TILE_SIZE) + camera.scroll.y)
-                    for x, y in mask
-                ]
-                pg.draw.polygon(screen, (150, 200, 200), mask, 3)
+            if tile_name != '':
+                tile_hovered = self.world[self.hover_tile[0]][self.hover_tile[1]]
+                tile_hovered.draw_hover_outline(
+                    screen,
+                    (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
+                     render_pos[1] - (tile_img.get_height() - TILE_SIZE) + camera.scroll.y),
+                    tile_hovered.image)
 
     def create_world(self):
         """Crea el mundo."""
@@ -231,8 +239,11 @@ class World():
                 name = 'rock'
             else:
                 name = ''
-
-        tile_out = Tile(grid_x, grid_y, rect, iso_poly, minx, miny, name)
+        if name != '':
+            tile_image = self.tile_images[name]
+        else:
+            tile_image = None
+        tile_out = Tile(grid_x, grid_y, rect, iso_poly, minx, miny, name, tile_image)
 
         return tile_out
 
