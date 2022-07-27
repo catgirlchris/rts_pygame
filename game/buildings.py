@@ -1,16 +1,15 @@
 
 import pygame as pg
-from game.camera import Camera
+from game import drawable
 
-from game.resource_manager import ResourceManager
-from game.settings import TILE_SIZE
+from game import resource_manager
 
 
-class Building:
+class Building(drawable.Drawable):
 
     def __init__(
             self, pos, name: str, image: pg.image,
-            resource_manager: ResourceManager, resource=None):
+            resource_manager: resource_manager.ResourceManager, resource=None):
         self.image = image
         self.name = name
         self.rect = self.image.get_rect(topleft=pos)
@@ -27,25 +26,9 @@ class Building:
                 self.resource_manager.resources[self.resource] += 1
                 self.resource_cooldown = now
 
-    def draw(self, screen: pg.Surface, render_pos, camera: Camera, grass_tiles, draw_outline=False):
-        screen.blit(
-            self.image,
-            (render_pos[0] + grass_tiles.get_width() / 2 + camera.scroll.x,
-             render_pos[1] - (self.image.get_height() - TILE_SIZE) + camera.scroll.y)
-        )
-
-        if draw_outline:
-            self.draw_outline(screen, render_pos, camera, grass_tiles)
-
-    def draw_outline(self, screen: pg.Surface, render_pos, camera: Camera, grass_tiles):
-        mask = pg.mask.from_surface(self.image).outline()
-        mask = [
-            (x + render_pos[0] + grass_tiles.get_width() / 2 + camera.scroll.x,
-                y + render_pos[1] - (
-                    self.image.get_height() - TILE_SIZE) + camera.scroll.y)
-            for x, y in mask
-        ]
-        pg.draw.polygon(screen, (150, 200, 200), mask, 3)
+    def draw(self, screen: pg.Surface, render_pos, image: pg.image = None,
+             hover_outline=False, selected_outline=False):
+        super().draw(screen, render_pos, self.image, hover_outline, selected_outline)
 
 
 class Lumbermill(Building):
@@ -53,7 +36,7 @@ class Lumbermill(Building):
     resource = "wood"
     image = pg.image.load("assets/graphics/building01.png")
 
-    def __init__(self, pos, resource_manager: ResourceManager):
+    def __init__(self, pos, resource_manager: resource_manager.ResourceManager):
         super().__init__(
             pos,
             Lumbermill.name,
@@ -71,7 +54,7 @@ class Stonemasonry(Building):
     resource = "stone"
     image = pg.image.load("assets/graphics/building02.png")
 
-    def __init__(self, pos, resource_manager: ResourceManager):
+    def __init__(self, pos, resource_manager: resource_manager.ResourceManager):
         super().__init__(
             pos,
             Stonemasonry.name,
