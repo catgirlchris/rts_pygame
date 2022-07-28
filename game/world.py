@@ -10,12 +10,14 @@ import pygame as pg
 import noise
 
 import game
+from game import building_manager
+from game.building_manager import BuildingManager
 from game.settings import TILE_SIZE
 from game.camera import Camera
 from game.resource_manager import ResourceManager
 from game.tile import Tile
 from game.buildings import Building, Lumbermill, Stonemasonry
-#from game.worker import Worker as Worker
+# from game.worker import Worker as Worker
 
 from hud.building_preview import BuildingPreview
 from hud.hud_manager import Hud
@@ -48,8 +50,9 @@ class World():
         self.world: List[List[Tile]] = self.create_world()
         self.collision_matrix = self.create_collision_matrix()
 
-        self.buildings: List[List[Building]] = [
-            [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
+        self.building_manager = BuildingManager
+        self.buildings = building_manager.buildings
+
         self.workers: List[List[game.Worker]] = [
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
 
@@ -110,16 +113,10 @@ class World():
             resource_manager: ResourceManager,
             entities: List, buildings: List):
         '''Añade un edificio a la lista de entidades, a la lista de edificios y actualiza el mundo. y las colisiones.'''
-        if self.hud.selected_tile["name"] == "lumbermill":
-            ent = Lumbermill(render_pos, resource_manager)
-            entities.append(ent)
-            buildings[grid_pos[0]][grid_pos[1]] = ent
-        elif self.hud.selected_tile["name"] == "stonemasonry":
-            ent = Stonemasonry(render_pos, resource_manager)
-            entities.append(ent)
-            buildings[grid_pos[0]][grid_pos[1]] = ent
+        ent = self.building_manager.add_building(self.hud.selected_tile, render_pos,
+                                                 grid_pos, resource_manager)
+        entities.append(ent)
 
-        # self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
         self.world[grid_pos[0]][grid_pos[1]].collision = True
         self.collision_matrix[grid_pos[1]][grid_pos[0]] = 1  # reverse access to collision matrix
         self.hud.selected_tile = None
