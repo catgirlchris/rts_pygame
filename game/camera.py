@@ -9,7 +9,7 @@ class Camera:
         self.width = width
         self.height = height
 
-        self.top_border       = self.height*0.96
+        self.top_border = self.height*0.96
         self.right_border     = self.width*0.96
         self.bottom_border    = self.height*0.04
         self.left_border      = self.width*0.04

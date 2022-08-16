@@ -8,9 +8,10 @@ from hud.resources_hud import ResourcesHud
 import game.utils as utils
 from hud.select_hud import SelectHud
 
+
 class Hud:
     # TODO singleton
-    def __init__(self, width, height, resource_manager:ResourceManager):
+    def __init__(self, width, height, resource_manager: ResourceManager):
         '''Construye al hud manager.\n
         Pide un tamaño y acceso al resource manager.\n
         Se encarga de manejar los paneles de la GUI.\n'''
@@ -89,8 +90,8 @@ class Hud:
 
     def load_images(self):
         '''Carga las imágenes necesarias para los paneles.'''
-        lumbermill = pg.image.load("assets/graphics/building01.png")
-        stonemasonry = pg.image.load("assets/graphics/building02.png")
+        lumbermill = pg.image.load("assets/graphics/lumbermill.png")
+        stonemasonry = pg.image.load("assets/graphics/stonemasonry.png")
 
         images = {
             "lumbermill": lumbermill,

@@ -75,6 +75,8 @@ class Game:
         self.hud.update()
         self.world.update(self.camera)
 
+        # TODO ¿con que fin puse esto aqui?
+        print(self.entities)
         for ent in self.entities:
             ent.update()
 

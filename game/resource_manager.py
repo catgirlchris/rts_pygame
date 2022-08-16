@@ -2,6 +2,7 @@
 from importlib import resources
 import pygame as pg
 
+
 class ResourceManager:
 
     def __init__(self):
