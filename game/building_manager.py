@@ -1,5 +1,4 @@
 from typing import List, Tuple
-import pygame as pg
 
 from game import buildings, resource_manager
 from game.buildings import Building, Lumbermill, Stonemasonry
