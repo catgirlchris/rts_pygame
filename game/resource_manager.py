@@ -1,7 +1,4 @@
 
-from importlib import resources
-import pygame as pg
-
 class ResourceManager:
 
     def __init__(self):
@@ -14,8 +11,8 @@ class ResourceManager:
 
         # costs
         self.costs = {
-            "lumbermill": {"wood":7, "stone":3,},
-            "stonemasonry": {"wood":3, "stone":5}
+            "lumbermill": {"wood": 7, "stone": 3},
+            "stonemasonry": {"wood": 3, "stone": 5}
         }
 
     def apply_cost_to_resource(self, building):

@@ -34,7 +34,7 @@ class Building(drawable.Drawable):
 class Lumbermill(Building):
     name = "lumbermill"
     resource = "wood"
-    image = pg.image.load("assets/graphics/building01.png")
+    image = pg.image.load("assets/graphics/lumbermill.png")
 
     def __init__(self, pos, resource_manager: resource_manager.ResourceManager):
         super().__init__(
@@ -52,7 +52,7 @@ class Lumbermill(Building):
 class Stonemasonry(Building):
     name = "stonemasonry"
     resource = "stone"
-    image = pg.image.load("assets/graphics/building02.png")
+    image = pg.image.load("assets/graphics/stonemasonry.png")
 
     def __init__(self, pos, resource_manager: resource_manager.ResourceManager):
         super().__init__(

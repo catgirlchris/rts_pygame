@@ -10,12 +10,14 @@ import pygame as pg
 import noise
 
 import game
+from game import building_manager
+from game.building_manager import BuildingManager
 from game.settings import TILE_SIZE
 from game.camera import Camera
 from game.resource_manager import ResourceManager
 from game.tile import Tile
 from game.buildings import Building, Lumbermill, Stonemasonry
-#from game.worker import Worker as Worker
+# from game.worker import Worker as Worker
 
 from hud.building_preview import BuildingPreview
 from hud.hud_manager import Hud
@@ -33,6 +35,7 @@ class World():
         self.resource_manager = resource_manager
         self.grid_length_x = grid_size[0]
         self.grid_length_y = grid_size[1]
+        self.grid_size = (self.grid_length_x, self.grid_length_y)
         self.width = screen_size[0]
         self.height = screen_size[1]
 
@@ -48,8 +51,9 @@ class World():
         self.world: List[List[Tile]] = self.create_world()
         self.collision_matrix = self.create_collision_matrix()
 
-        self.buildings: List[List[Building]] = [
-            [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
+        self.building_manager = BuildingManager(self.grid_size, self.entities)
+        self.buildings = self.building_manager.buildings
+
         self.workers: List[List[game.Worker]] = [
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
 
@@ -110,16 +114,12 @@ class World():
             resource_manager: ResourceManager,
             entities: List, buildings: List):
         '''Añade un edificio a la lista de entidades, a la lista de edificios y actualiza el mundo. y las colisiones.'''
-        if self.hud.selected_tile["name"] == "lumbermill":
-            ent = Lumbermill(render_pos, resource_manager)
-            entities.append(ent)
-            buildings[grid_pos[0]][grid_pos[1]] = ent
-        elif self.hud.selected_tile["name"] == "stonemasonry":
-            ent = Stonemasonry(render_pos, resource_manager)
-            entities.append(ent)
-            buildings[grid_pos[0]][grid_pos[1]] = ent
 
-        # self.world[grid_pos[0]][grid_pos[1]]["tile"] = self.hud.selected_tile["name"]
+        # TODO mejorar esta llamada, es muy lioso usar diccionarios
+        ent = self.building_manager.add_building(self.hud.selected_tile["name"], render_pos,
+                                                 grid_pos, resource_manager)
+        #entities.append(ent)
+
         self.world[grid_pos[0]][grid_pos[1]].collision = True
         self.collision_matrix[grid_pos[1]][grid_pos[0]] = 1  # reverse access to collision matrix
         self.hud.selected_tile = None
@@ -295,14 +295,14 @@ class World():
     def load_images(self):
         """Load images."""
         block = pg.image.load("assets/graphics/block.png").convert_alpha()
-        building1 = pg.image.load("assets/graphics/building01.png").convert_alpha()
-        building2 = pg.image.load("assets/graphics/building02.png").convert_alpha()
+        lumbermill = pg.image.load("assets/graphics/lumbermill.png").convert_alpha()
+        stonemasonry = pg.image.load("assets/graphics/stonemasonry.png").convert_alpha()
         tree = pg.image.load("assets/graphics/tree.png").convert_alpha()
         rock = pg.image.load("assets/graphics/rock.png").convert_alpha()
 
         images = {
-            "building1": building1,
-            "building2": building2,
+            "lumbermill": lumbermill,
+            "stonemasonry": stonemasonry,
             "tree": tree,
             "rock": rock,
             "block": block
