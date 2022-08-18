@@ -2,7 +2,7 @@
 import pygame as pg
 
 from game.resource_manager import ResourceManager
-from hud.build_hud import BuildHud
+from hud.build_hud import BuildHud, TileIcon
 from hud.resources_hud import ResourcesHud
 import game.utils as utils
 from hud.select_hud import SelectHud
@@ -52,7 +52,7 @@ class Hud:
                                     self.images)
         self.hud_list.append(self.select_hud)
 
-        self.selected_tile = None
+        self.selected_tile: TileIcon = None
         ''' build_hud selected tile '''
 
         self.examined_tile = None
@@ -69,12 +69,12 @@ class Hud:
 
         # TODO mover a build_hud?
         for tile in self.build_hud.tiles:
-            if self.resource_manager.is_affordable(tile["name"]):
-                tile["affordable"] = True
+            if self.resource_manager.is_affordable(tile.name):
+                tile.afforfable = True
             else:
-                tile["affordable"] = False
+                tile.afforfable = False
 
-            if tile["rect"].collidepoint(mouse_pos) and tile["affordable"]:
+            if tile.rect.collidepoint(mouse_pos) and tile.afforfable:
                 if mouse_action[0]:
                     self.selected_tile = tile
 

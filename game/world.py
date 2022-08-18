@@ -77,7 +77,7 @@ class World():
         if (m_grid_pos is not None) and (self.can_place_tile(m_grid_pos)):
             if self.hud.selected_tile is not None:
                 # crea building_preview
-                img = self.hud.selected_tile["image"].copy()
+                img = self.hud.selected_tile.image.copy()
                 self.building_preview = BuildingPreview(img, m_grid_pos, self.world)
 
                 render_pos = self.world[m_grid_pos[0]][m_grid_pos[1]].render_pos
@@ -116,7 +116,7 @@ class World():
         '''Añade un edificio a la lista de entidades, a la lista de edificios y actualiza el mundo. y las colisiones.'''
 
         # TODO mejorar esta llamada, es muy lioso usar diccionarios
-        ent = self.building_manager.add_building(self.hud.selected_tile["name"], render_pos,
+        ent = self.building_manager.add_building(self.hud.selected_tile.name, render_pos,
                                                  grid_pos, resource_manager)
         #entities.append(ent)
 
