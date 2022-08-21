@@ -4,7 +4,6 @@ import pygame as pg
 
 from game import resource_manager
 from game.tile import Tile
-import game.world
 
 
 class Building(Tile):

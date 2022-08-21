@@ -23,7 +23,7 @@ class Drawable():
         if selected_outline:
             self.draw_selected_outline(screen, render_pos)
 
-    def draw_outline(self, screen: pg.Surface, render_pos, color, 
+    def draw_outline(self, screen: pg.Surface, render_pos, color,
                      width: int, image: pg.Surface = None):
         if image is None:
             image = self.image
