@@ -5,7 +5,7 @@ from game.drawable import Drawable
 
 class Tile(Drawable):
 
-    def __init__(self, grid_x: int, grid_y: int, rect,
+    def __init__(self, grid_x: int, grid_y: int, rect: pg.Rect,
                  iso_poly, minx: int, miny: int, name: str, image: pg.image):
         # TODO change to tuples
         self.grid_pos = (grid_x, grid_y)

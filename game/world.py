@@ -118,7 +118,7 @@ class World():
         # TODO mejorar esta llamada, es muy lioso usar diccionarios
         ent = self.building_manager.add_building(self.hud.selected_tile.name, render_pos,
                                                  grid_pos, resource_manager)
-        #entities.append(ent)
+        # entities.append(ent)
 
         self.world[grid_pos[0]][grid_pos[1]].collision = True
         self.collision_matrix[grid_pos[1]][grid_pos[0]] = 1  # reverse access to collision matrix

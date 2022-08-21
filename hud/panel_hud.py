@@ -9,7 +9,7 @@ class PanelHud:
         self.width, self.height = size
         self.hud_color = hud_color
         self.surface = pg.Surface(size, pg.SRCALPHA)
-        self.rect = self.surface.get_rect(topleft=pos)
+        self.rect: pg.Rect = self.surface.get_rect(topleft=pos)
         self.surface.fill(self.hud_color)
 
     def draw(self, screen: pg.Surface):

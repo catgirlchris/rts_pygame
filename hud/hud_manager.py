@@ -3,6 +3,7 @@ import pygame as pg
 
 from game.resource_manager import ResourceManager
 from hud.build_hud import BuildHud, TileIcon
+from hud.panel_hud import PanelHud
 from hud.resources_hud import ResourcesHud
 import game.utils as utils
 from hud.select_hud import SelectHud
@@ -10,14 +11,14 @@ from hud.select_hud import SelectHud
 
 class Hud:
     # TODO singleton
-    def __init__(self, width, height, resource_manager: ResourceManager):
+    def __init__(self, width: int, height: int, resource_manager: ResourceManager):
         '''Construye al hud manager.\n
         Pide un tamaño y acceso al resource manager.\n
         Se encarga de manejar los paneles de la GUI.\n'''
         self.resource_manager = resource_manager
         self.width = width
         self.height = height
-        self.hud_list = list()
+        self.hud_list: list[PanelHud] = list()
 
         # childs starting position and size
         self.resources_hud_start_pos = (0, 0)
