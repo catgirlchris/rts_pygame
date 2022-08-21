@@ -14,7 +14,7 @@ def rgb(r, g, b, a):
     return r, g, b, a
 
 
-def scale_image(image: pg.image, w: int = None, h: int = None):
+def scale_image(image: pg.Surface, w: int = None, h: int = None):
     if (w is None) and (h is None):
         pass
 

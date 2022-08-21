@@ -2,6 +2,7 @@
 import pygame as pg
 
 from game.resource_manager import ResourceManager
+from game.tile import Tile
 from hud.build_hud import BuildHud, TileIcon
 from hud.panel_hud import PanelHud
 from hud.resources_hud import ResourcesHud
@@ -56,7 +57,7 @@ class Hud:
         self.selected_tile: TileIcon = None
         ''' build_hud selected tile '''
 
-        self.examined_tile = None
+        self.examined_tile: Tile = None
         ''' examine_hud selected tile'''
 
     def update(self):

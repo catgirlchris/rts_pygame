@@ -1,15 +1,24 @@
 
+from typing import Tuple
 import pygame as pg
-from game import drawable
 
 from game import resource_manager
+from game.tile import Tile
+import game.world
 
 
-class Building(drawable.Drawable):
+class Building(Tile):
 
     def __init__(
-            self, pos, name: str, image: pg.image,
+            self, pos: Tuple[int, int], name: str, image: pg.Surface,
             resource_manager: resource_manager.ResourceManager, resource=None):
+        # TODO pensar como arreglar esta chapucilla
+        rect = image.get_rect()
+        iso_poly = None
+        minx = None
+        miny = None
+        super().__init__(pos, rect, iso_poly, minx, miny, name, image)
+
         self.image = image
         self.name = name
         self.rect = self.image.get_rect(topleft=pos)
@@ -26,7 +35,7 @@ class Building(drawable.Drawable):
                 self.resource_manager.resources[self.resource] += 1
                 self.resource_cooldown = now
 
-    def draw(self, screen: pg.Surface, render_pos, image: pg.image = None,
+    def draw(self, screen: pg.Surface, render_pos, image: pg.Surface = None,
              hover_outline=False, selected_outline=False):
         super().draw(screen, render_pos, self.image, hover_outline, selected_outline)
 

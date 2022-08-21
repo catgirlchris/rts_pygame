@@ -10,13 +10,12 @@ import pygame as pg
 import noise
 
 import game
-from game import building_manager
 from game.building_manager import BuildingManager
 from game.settings import TILE_SIZE
 from game.camera import Camera
 from game.resource_manager import ResourceManager
 from game.tile import Tile
-from game.buildings import Building, Lumbermill, Stonemasonry
+
 # from game.worker import Worker as Worker
 
 from hud.building_preview import BuildingPreview
@@ -58,7 +57,7 @@ class World():
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
 
         self.building_preview: BuildingPreview = None
-        self.examine_tile = None
+        self.examine_tile: Tuple[int, int] = None
         self.hover_tile: Tuple[int, int] = None
 
     def update(self, camera: Camera):
@@ -68,7 +67,7 @@ class World():
 
         # right click deselect
         if mouse_action[2]:
-            self.examine_tile = None
+            # self.examine_tile = None
             self.hud.examined_tile = None
 
         # preview y construccion de edificio
@@ -102,22 +101,23 @@ class World():
 
                 # if mouse_action[0] and collision:
                 if mouse_action[0] and (building is not None):
-                    self.examine_tile = m_grid_pos
+                    # self.examine_tile = m_grid_pos
                     self.hud.examined_tile = building
                 # TODO  examine tile like tree or rock
                 '''elif mouse_action[0] and (collision):
-                    self.examine_tile = m_grid_pos
+                    # self.examine_tile = m_grid_pos
                     self.hud.examined_tile = m_grid_pos'''
 
     def add_building(
             self, render_pos, grid_pos,
             resource_manager: ResourceManager,
             entities: List, buildings: List):
-        '''Añade un edificio a la lista de entidades, a la lista de edificios y actualiza el mundo. y las colisiones.'''
+        '''Añade un edificio a la lista de entidades y a la lista de edificios.
+        Tambien actualiza el mundo y las colisiones.'''
 
         # TODO mejorar esta llamada, es muy lioso usar diccionarios
-        ent = self.building_manager.add_building(self.hud.selected_tile.name, render_pos,
-                                                 grid_pos, resource_manager)
+        self.building_manager.add_building(self.hud.selected_tile.name, render_pos,
+                                           grid_pos, resource_manager)
         # entities.append(ent)
 
         self.world[grid_pos[0]][grid_pos[1]].collision = True
@@ -158,14 +158,19 @@ class World():
                         draw_hover_outline = True
 
                     draw_selected_outline = False
-                    if (self.examine_tile is not None) and (
+                    '''if (self.examine_tile is not None) and (
                             (x == self.examine_tile[0]) and (y == self.examine_tile[1])):
+                        draw_selected_outline = True'''
+                    if (self.hud.examined_tile is not None) and (
+                            (x == self.hud.examined_tile.grid_pos[0])
+                            and (y == self.hud.examined_tile.grid_pos[1])):
                         draw_selected_outline = True
 
                     building.draw(
                         screen,
                         (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
-                         render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y),
+                         render_pos[1] - (building.image.get_height() - TILE_SIZE)
+                         + camera.scroll.y),
                         hover_outline=draw_hover_outline, selected_outline=draw_selected_outline)
 
                 # draw WORKERS
@@ -222,7 +227,7 @@ class World():
             (grid_x * TILE_SIZE, grid_y * TILE_SIZE + TILE_SIZE),
         ]
 
-        iso_poly = [self.cart_to_iso(x, y) for x, y in rect]
+        iso_poly = [World.cart_to_iso(x, y) for x, y in rect]
 
         minx = min([x for x, y in iso_poly])
         miny = min([y for x, y in iso_poly])
@@ -243,7 +248,7 @@ class World():
             tile_image = self.tile_images[name]
         else:
             tile_image = None
-        tile_out = Tile(grid_x, grid_y, rect, iso_poly, minx, miny, name, tile_image)
+        tile_out = Tile((grid_x, grid_y), rect, iso_poly, minx, miny, name, tile_image)
 
         return tile_out
 
@@ -259,7 +264,7 @@ class World():
                     collision_matrix[y][x] = 0
         return collision_matrix
 
-    def cart_to_iso(self, x, y):
+    def cart_to_iso(x, y):
         iso_x = x - y
         iso_y = (x + y) / 2
         return iso_x, iso_y

@@ -8,7 +8,7 @@ from game.tile import Tile
 class BuildingPreview:
 
     # def create_temp_tile(self, img, grid_pos):
-    def __init__(self, img: pg.image, grid_pos, world_tiles: List[List[Tile]]):
+    def __init__(self, img: pg.Surface, grid_pos, world_tiles: List[List[Tile]]):
         '''Crea el temptile a partir de una imagen y la posicion en el grid.\n'''
         self.image = img
         self.world_tiles = world_tiles
