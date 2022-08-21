@@ -23,7 +23,7 @@ class Worker:
              image.get_height() * 2))
 
         # pathfinding
-        self.world.workers[tile.grid[0]][tile.grid[1]] = self
+        self.world.workers[tile.grid_pos[0]][tile.grid_pos[1]] = self
         self.move_timer = pg.time.get_ticks()
 
         self.create_path()
@@ -38,7 +38,7 @@ class Worker:
 
             if not dest_tile.collision:
                 self.grid = Grid(matrix=self.world.collision_matrix)
-                self.start = self.grid.node(self.tile.grid[0], self.tile.grid[1])
+                self.start = self.grid.node(self.tile.grid_pos[0], self.tile.grid_pos[1])
                 self.end = self.grid.node(x, y)
                 finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
                 self.path_index = 0
@@ -46,7 +46,7 @@ class Worker:
                 searching_for_path = False
 
     def change_tile(self, new_tile):
-        self.world.workers[self.tile.grid[0]][self.tile.grid[1]] = None
+        self.world.workers[self.tile.grid_pos[0]][self.tile.grid_pos[1]] = None
         self.world.workers[new_tile[0]][new_tile[1]] = self
         self.tile = self.world.world[new_tile[0]][new_tile[1]]
 

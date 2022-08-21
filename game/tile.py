@@ -5,15 +5,16 @@ from game.drawable import Drawable
 
 class Tile(Drawable):
 
-    def __init__(self, grid_x, grid_y, rect, iso_poly, minx, miny, name, image):
-
-        self.grid = [grid_x, grid_y]
+    def __init__(self, grid_x: int, grid_y: int, rect,
+                 iso_poly, minx: int, miny: int, name: str, image: pg.image):
+        # TODO change to tuples
+        self.grid_pos = (grid_x, grid_y)
         self.cart_rect = rect
         self.iso_poly = iso_poly
-        self.render_pos = [minx, miny]
+        self.render_pos = (minx, miny)
         self.name = name
         self.image = image
-        self.collision = False if self.name == "" else True
+        self.collision = False if (self.name == "") else True
 
     def draw(self, screen: pg.Surface, render_pos, image: pg.image,
              hover_outline=False, selected_outline=False):
