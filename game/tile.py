@@ -8,7 +8,6 @@ class Tile(Drawable):
 
     def __init__(self, grid_pos: Tuple[int, int], rect: pg.Rect,
                  iso_poly, minx: int, miny: int, name: str, image: pg.Surface):
-        # TODO change to tuples
         self.grid_pos = grid_pos
         self.cart_rect = rect
         self.iso_poly = iso_poly

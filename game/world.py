@@ -15,6 +15,7 @@ from game.settings import TILE_SIZE
 from game.camera import Camera
 from game.resource_manager import ResourceManager
 from game.tile import Tile
+from game.worker import Worker
 
 # from game.worker import Worker as Worker
 
@@ -53,7 +54,7 @@ class World():
         self.building_manager = BuildingManager(self.grid_size, self.entities)
         self.buildings = self.building_manager.buildings
 
-        self.workers: List[List[game.Worker]] = [
+        self.workers: List[List[Worker]] = [
             [None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
 
         self.building_preview: BuildingPreview = None
